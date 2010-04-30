@@ -7,14 +7,21 @@ include(${QT_USE_FILE})
 
 # the variable "cwmp_SRCS" contains all .cpp files of this project
 set(cwmpd_SRCS
-    main.cpp)
+    main.cpp
+    cwmpServer.cpp
+    cwmpCtx.cpp
+    tcpSessionThread.cpp)
+
+set(cwmpd_MOC_HDRS
+    cwmpServer.h)
 
 # tell cmake to create .moc files for all files in the variable cwmp_SRCS that require such a file.
 # note: this assumes that you use #include "header.moc" in your files
-qt4_automoc(${cwmpd_SRCS})
+#qt4_automoc(${cwmpd_SRCS})
+qt4_wrap_cpp(cwmpd_MOC_SRCS ${cwmpd_MOC_HDRS})
 
 # create an executable file named "cwmp" from the source files in the variable "cwmp_SRCS".
-add_executable(cwmpd ${cwmpd_SRCS})
+add_executable(cwmpd ${cwmpd_SRCS} ${cwmpd_MOC_SRCS})
 
 # link the "cwmp" target against the Qt libraries. which libraries exactly, is defined by the "include(${QT_USE_FILE})" line above, which sets up this variable.
 target_link_libraries(cwmpd ${QT_LIBRARIES})
