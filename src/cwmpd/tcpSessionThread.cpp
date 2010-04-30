@@ -5,6 +5,7 @@
 
 #include <QtCrypto>
 
+#include "cwmpCtx.h"
 #include "tcpSessionThread.h"
 
 TCPSessionThread::TCPSessionThread(int socketDescriptor, QObject *parent)
@@ -38,7 +39,6 @@ void TCPSessionThread::handleGetContentState() {
         return;
     }
 
-    //QByteArray buffer = _socket.readLine();
     _contentRead += _socket.read(_content.data() + _contentRead, _contentLen - _contentRead);
     qDebug("%s, %d: _contentRead=%d, _contentLen=%d", __FUNCTION__, __LINE__, _contentRead, _contentLen);
     if(_contentRead < _contentLen) {
@@ -53,7 +53,6 @@ void TCPSessionThread::handleGetContentState() {
 }
 
 void TCPSessionThread::handleGetHeadersState()  {
-    QCA::Initializer init;
     if (!_socket.setSocketDescriptor(_socketDescriptor)) {
         return;
     }
@@ -165,15 +164,32 @@ void TCPSessionThread::parseInform(const QDomNode &informNode) {
 
         node = node.nextSibling();
     }
-
 }
 
 void TCPSessionThread::parseDeviceId(const QDomNode &deviceIdNode) {
     QDomNode node = deviceIdNode.firstChild();
     QByteArray name;
+    ClientID clientId;
+    QDomElement element;
     while(!node.isNull()) {
+        name = node.nodeName().toLatin1();
+        element = node.toElement();
+        if(QString("Manufacturer") == node.nodeName()) {
+            clientId.setManufacturer(element.text());
+        } else if(QString("OUI") == node.nodeName()) {
+            clientId.setOui(element.text());
+        } else if(QString("ProductClass") == node.nodeName()) {
+            clientId.setProductClass(element.text());
+        } else if(QString("SerialNumber") == node.nodeName()) {
+            clientId.setSerialNo(element.text());
+        }
 
         node = node.nextSibling();
     }
+    qDebug("manufacturer=<%s>", clientId.manufacturerToByteArray().constData());
+    qDebug("oui=<%s>", clientId.ouiToByteArray().constData());
+    qDebug("productClass=<%s>", clientId.productClassToByteArray().constData());
+    qDebug("serialNo=<%s>", clientId.serialNoToByteArray().constData());
+    qDebug("id=<%s>", clientId.idToByteArray().constData());
 }
 
