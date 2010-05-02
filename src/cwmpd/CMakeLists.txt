@@ -10,9 +10,10 @@ link_directories(${QCA2_LIBRARY_DIRS})
 add_definitions(${QCA2_CFLAGS_OTHER})
 # the variable "cwmp_SRCS" contains all .cpp files of this project
 set(cwmpd_SRCS
-    main.cpp
-    cwmpServer.cpp
     cwmpCtx.cpp
+    cwmpInform.cpp
+    cwmpServer.cpp
+    main.cpp
     tcpSessionThread.cpp)
 
 set(cwmpd_MOC_HDRS
