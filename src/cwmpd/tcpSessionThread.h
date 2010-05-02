@@ -5,6 +5,7 @@
 #include <QTcpSocket>
 #include <QThread>
 
+class Inform;
 
 class TCPSessionThread : public QThread {
     Q_OBJECT
@@ -27,8 +28,6 @@ class TCPSessionThread : public QThread {
         void handleGetHeadersState();
         void handleParseSoapState();
         int contentLenHdr(const QByteArray &line);
-        void parseInform(const QDomNode &informNode);
-        void parseDeviceId(const QDomNode &deviceIdNode);
 
         int _socketDescriptor;
         QTcpSocket _socket;
@@ -36,6 +35,7 @@ class TCPSessionThread : public QThread {
         int _contentLen;
         int _contentRead;
         QByteArray _content;
+        Inform *_inform;
 };
 
 #endif // _CWMP_SESSION_THREAD_H_

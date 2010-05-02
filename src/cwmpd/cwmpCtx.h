@@ -2,6 +2,7 @@
 #define _CWMP_CTX_H_
 
 #include <QByteArray>
+#include <QString>
 
 class ClientID {
     public:
