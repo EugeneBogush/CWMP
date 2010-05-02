@@ -92,6 +92,14 @@ void TCPSessionThread::handleParseSoapState() {
                 qDebug("About to parse Inform");
                 //parseInform(informNode);
                 _inform = new Inform(informNode);
+                const ClientID *clientID = _inform->clientID();
+                if(clientID) {
+                    qDebug("manufacturer=<%s>", clientID->manufacturerToByteArray().constData());
+                    qDebug("oui=<%s>", clientID->ouiToByteArray().constData());
+                    qDebug("productClass=<%s>", clientID->productClassToByteArray().constData());
+                    qDebug("serialNo=<%s>", clientID->serialNoToByteArray().constData());
+                    qDebug("id=<%s>", clientID->idToByteArray().constData());
+                }
             }
 
             informNode = informNode.nextSibling();

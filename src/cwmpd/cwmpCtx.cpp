@@ -56,3 +56,10 @@ void CWMPCtx::addSession(const ClientID &clientID) {
         cwmpSessions.append(clientID);
 }
 
+const ClientID *CWMPCtx::clientID(const ClientID &clientID) {
+    const ClientID *c = NULL;
+    if(cwmpSessions.contains(clientID)) {
+        c = &(cwmpSessions.at(cwmpSessions.indexOf(clientID)));
+    }
+}
+

@@ -54,6 +54,7 @@ class CWMPCtx {
     public:
         static CWMPCtx &instance();
         void addSession(const ClientID &clientID);
+        const ClientID *clientID(const ClientID &clientID);
 
 };
 #endif // _CWMP_CTX_H_

@@ -1,7 +1,8 @@
 #include "cwmpCtx.h"
 #include "cwmpInform.h"
 
-Inform::Inform(const QDomNode &informNode) {
+Inform::Inform(const QDomNode &informNode)
+: _clientID(NULL) {
     QDomNode node = informNode.firstChild();
     QByteArray name;
     while(!node.isNull()) {
@@ -45,11 +46,6 @@ void Inform::parseDeviceId(const QDomNode &deviceIdNode) {
 
     // Now check if it's ongoing CWMP session. If not, create context for it.
     CWMPCtx::instance().addSession(clientID);
-    CWMPCtx::instance().addSession(clientID);
-    qDebug("manufacturer=<%s>", clientID.manufacturerToByteArray().constData());
-    qDebug("oui=<%s>", clientID.ouiToByteArray().constData());
-    qDebug("productClass=<%s>", clientID.productClassToByteArray().constData());
-    qDebug("serialNo=<%s>", clientID.serialNoToByteArray().constData());
-    qDebug("id=<%s>", clientID.idToByteArray().constData());
+    _clientID = CWMPCtx::instance().clientID(clientID);
 }
 
