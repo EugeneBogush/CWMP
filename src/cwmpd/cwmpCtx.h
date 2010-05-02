@@ -44,6 +44,8 @@ class CWMPCtx {
         ~CWMPCtx();
         CWMPCtx(const CWMPCtx &);
         CWMPCtx operator =(const CWMPCtx &);
+        template <class MatchClass>
+        const ClientID *cID(const MatchClass &match);
 
         QList<ClientID> cwmpSessions;
 
@@ -54,6 +56,7 @@ class CWMPCtx {
     public:
         static CWMPCtx &instance();
         void addSession(const ClientID &clientID);
+        const ClientID *clientID(const QString &serialNo);
         const ClientID *clientID(const ClientID &clientID);
 
 };

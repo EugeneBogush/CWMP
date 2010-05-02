@@ -40,6 +40,14 @@ void ClientID::generateId() {
     qDebug("serial=<%s>, sha256=<%s>", serial.constData(), hash.constData());
 }
 
+template <class MatchClass>
+const ClientID *CWMPCtx::cID(const MatchClass &match) {
+    const ClientID *c = NULL;
+    if(cwmpSessions.contains(match)) {
+        c = &(cwmpSessions.at(cwmpSessions.indexOf(match)));
+    }
+}
+
 CWMPCtx &CWMPCtx::instance() {
     if(true) {
         QMutexLocker locker(&_instanceMutex);
@@ -56,10 +64,11 @@ void CWMPCtx::addSession(const ClientID &clientID) {
         cwmpSessions.append(clientID);
 }
 
+const ClientID *CWMPCtx::clientID(const QString &serialNo) {
+    return cID(serialNo);
+}
+
 const ClientID *CWMPCtx::clientID(const ClientID &clientID) {
-    const ClientID *c = NULL;
-    if(cwmpSessions.contains(clientID)) {
-        c = &(cwmpSessions.at(cwmpSessions.indexOf(clientID)));
-    }
+    return cID(clientID);
 }
 
