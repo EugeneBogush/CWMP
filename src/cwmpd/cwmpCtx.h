@@ -2,6 +2,8 @@
 #define _CWMP_CTX_H_
 
 #include <QByteArray>
+#include <QList>
+#include <QMutex>
 #include <QString>
 
 class ClientID {
@@ -24,6 +26,8 @@ class ClientID {
         QByteArray serialNoToByteArray() const { return _serialNo.toLatin1(); }
         void setSerialNo(const QString &serialNo);
 
+        bool operator ==(const ClientID &rhs) const { return (_serialNo == rhs._serialNo); }
+
     private:
         void generateId();
         
@@ -36,15 +40,20 @@ class ClientID {
 
 class CWMPCtx {
         /// Singleton pattern, thus constructor is private
-        CWMPCtx() {};
-        ~CWMPCtx() {};
+        CWMPCtx();
+        ~CWMPCtx();
         CWMPCtx(const CWMPCtx &);
         CWMPCtx operator =(const CWMPCtx &);
 
-        static CWMPCtx _instance;
+        QList<ClientID> cwmpSessions;
+
+        static CWMPCtx *_instance;
+        static QMutex _instanceMutex;
+        QMutex sessMutex;
 
     public:
-        CWMPCtx &instance();
+        static CWMPCtx &instance();
+        void addSession(const ClientID &clientID);
 
 };
 #endif // _CWMP_CTX_H_

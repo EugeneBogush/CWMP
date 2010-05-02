@@ -1,8 +1,11 @@
+#include <QMutexLocker>
+
 #include <QtCrypto>
 
 #include "cwmpCtx.h"
 
-CWMPCtx CWMPCtx::_instance;
+CWMPCtx *CWMPCtx::_instance = NULL;
+QMutex CWMPCtx::_instanceMutex;
 
 ClientID::ClientID() {
 }
@@ -14,6 +17,16 @@ ClientID::ClientID(const QString &serialNo) {
 void ClientID::setSerialNo(const QString &serialNo) {
     _serialNo = serialNo;
     generateId();
+}
+
+CWMPCtx::CWMPCtx() {
+    qDebug("Creating signleton CWMPCtx!!!!");
+}
+
+CWMPCtx::~CWMPCtx() {
+    QMutexLocker locker(&_instanceMutex);
+    delete _instance;
+    _instance = NULL;
 }
 
 void ClientID::generateId() {
@@ -28,6 +41,18 @@ void ClientID::generateId() {
 }
 
 CWMPCtx &CWMPCtx::instance() {
-    return _instance;
+    if(true) {
+        QMutexLocker locker(&_instanceMutex);
+        if(!_instance)
+            _instance = new CWMPCtx;
+    }
+
+    return *_instance;
+}
+
+void CWMPCtx::addSession(const ClientID &clientID) {
+    QMutexLocker locker(&sessMutex);
+    if(!cwmpSessions.contains(clientID))
+        cwmpSessions.append(clientID);
 }
 

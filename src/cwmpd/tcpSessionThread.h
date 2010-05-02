@@ -27,12 +27,12 @@ class TCPSessionThread : public QThread {
     private:
         void handleGetHeadersState();
         void handleParseSoapState();
-        int contentLenHdr(const QByteArray &line);
 
         int _socketDescriptor;
         QTcpSocket _socket;
         State _state;
         int _contentLen;
+        QString _cookie;
         int _contentRead;
         QByteArray _content;
         Inform *_inform;

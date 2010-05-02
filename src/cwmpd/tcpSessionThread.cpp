@@ -10,7 +10,8 @@
 #include "tcpSessionThread.h"
 
 TCPSessionThread::TCPSessionThread(int socketDescriptor, QObject *parent)
-: QThread(parent), _state(GET_HEADERS), _contentLen(0), _contentRead(0), _socketDescriptor(socketDescriptor) {
+: QThread(parent), _state(GET_HEADERS), _contentLen(0), _contentRead(0), _socketDescriptor(socketDescriptor),
+_inform(NULL) {
 }
 
 TCPSessionThread::~TCPSessionThread() {
@@ -110,9 +111,11 @@ void TCPSessionThread::handleParseSoapState() {
 }
 
 void TCPSessionThread::getHeaders() {
-    QByteArray message;
+    QByteArray line;
     QByteArray emptyLine;
     int cLen;
+    const QString CONT_LEN("Content-Length: ");
+    const QString COOKIE("Cookie:");
 
     emptyLine += 0x0d;
     emptyLine += 0x0a;
@@ -123,30 +126,24 @@ void TCPSessionThread::getHeaders() {
         return;
     }
 
-    message = _socket.readLine();
-    qDebug("%s: Got line <%s>", __FUNCTION__, message.constData());
+    line = _socket.readLine();
+    qDebug("%s: Got line <%s>", __FUNCTION__, line.constData());
 
-    if(0 <= (cLen = contentLenHdr(message))) {
-        _contentLen = cLen;
+    if(CONT_LEN == line.left(CONT_LEN.size())) {
+        QString contLenHdr(line);
+        _contentLen = contLenHdr.right(contLenHdr.size() - CONT_LEN.size()).toInt();
         _content.resize(_contentLen);
-        _state = GET_CONTENT;
-        qDebug("This is content length <%s>. Length is %d ", message.constData(), _contentLen);
-    } else if(emptyLine == message) {
+        qDebug("This is content length <%s>. Length is %d ", line.constData(), _contentLen);
+    } else if(COOKIE == line.left(COOKIE.size())) {
+        QString cookieHdr(line);
+        _cookie = cookieHdr.right(cookieHdr.size() - COOKIE.size());
+    } else if(emptyLine == line) {
+        // The end of headers
         _state = GET_CONTENT;
         QTimer::singleShot(0, this, SLOT(stateMachine()));
         return;
     }
     
     QTimer::singleShot(10, this, SLOT(getHeaders()));
-}
-
-int TCPSessionThread::contentLenHdr(const QByteArray &line) {
-    QString lineStr(line);
-    qDebug("Checking line <%s>", line.constData());
-    const QString CONT_LEN("Content-Length: ");
-    if(lineStr.left(CONT_LEN.size()) != CONT_LEN)
-        return -1;
-
-    return lineStr.right(lineStr.size() - CONT_LEN.size()).toInt();
 }
 
