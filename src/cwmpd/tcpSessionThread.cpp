@@ -58,16 +58,8 @@ void TCPSessionThread::handleGetHeadersState()  {
     if (!_socket.setSocketDescriptor(_socketDescriptor)) {
         return;
     }
-    /*
-       QCA::SecureArray serial("00135839d6b5");
-       QCA::Hash hasher("md5");
-       QByteArray hash = hasher.hashToString(serial).toLatin1();
-
-       qDebug("serial=<%s>, sha1=<%s>", serial.constData(), hash.constData());
-       */
 
     _socket.waitForReadyRead();
-
     getHeaders();
 }
 
@@ -107,6 +99,7 @@ void TCPSessionThread::handleParseSoapState() {
 
         n = n.nextSibling();
     }
+
     qDebug("%s, %d", __FUNCTION__, __LINE__);
 }
 
