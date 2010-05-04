@@ -28,5 +28,7 @@ if(DOXYGEN_FOUND)
         DESTINATION share/doc/prezu_cwmp/api-documentation)
     
     add_dependencies(cwmpd doc)
+else(DOXYGEN_FOUND)
+    message(WARNING "Doxygen was not found on the system, thus API documentation will NOT be generated")
 endif(DOXYGEN_FOUND)
 

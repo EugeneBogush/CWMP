@@ -15,7 +15,7 @@ class Inform {
         /*! This constructor creats an instance based on informNode.
          * \param informNode This holds \<Inform\> node of SOAP message
          */
-        Inform(const QDomNode &informNode);
+        Inform(const QDomNode &informNode, const ClientID &clientID);
 
         //! Default destructor
         ~Inform();

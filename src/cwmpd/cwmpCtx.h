@@ -37,7 +37,11 @@ class ClientID {
          * generated each time serial number is set.
          * \see void setSerialNo(const QString &serialNo);
          */
-        QString id() const { return _id; }
+        const QString &id() const { return _id; }
+
+        const QString &soapHdrId() const { return _soapHdrId; }
+        QByteArray soapHdrIdToByteArray() const { return _soapHdrId.toLatin1(); }
+        void setSoapHdrId(const QString &soapHdrId) { _soapHdrId = soapHdrId; }
 
         //! Returns CPE's Id
         /*!
@@ -135,6 +139,7 @@ class ClientID {
         void generateId();
         
         QString _id;
+        QString _soapHdrId;
         QString _manufacturer;
         QString _oui;
         QString _productClass;

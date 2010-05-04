@@ -19,9 +19,10 @@ class TCPSessionThread : public QThread {
     public:
         //! Represents all states of TCPSessionThread's state machine
         enum State {
-            GET_HEADERS, //!< Initial state -- need to parse HTTP headers
-            GET_CONTENT, //!< Headers already parsed, need to read HTTP content
-            PARSE_SOAP  //!< Content read, need to parse SOAP envelope
+            GET_HEADERS,              //!< Initial state -- need to parse HTTP headers
+            GET_CONTENT,              //!< Headers already parsed, need to read HTTP content
+            PARSE_SOAP,               //!< Content read, need to parse SOAP envelope
+            SEND_INFORM_RESPONSE      //!< Need to send InformResponse back to CPE
         };
 
         //! Constructor of TCP session thread
@@ -46,6 +47,7 @@ class TCPSessionThread : public QThread {
         void stateMachine();
         void getHeaders();
         void handleGetContentState();
+        void sendInformResponse();
 
     private:
         void handleGetHeadersState();
