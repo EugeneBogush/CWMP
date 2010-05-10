@@ -12,6 +12,8 @@ add_definitions(${QCA2_CFLAGS_OTHER})
 set(cwmpd_SRCS
     cwmpCtx.cpp
     cwmpInform.cpp
+    cwmpInformResponse.cpp
+    cwmpMethodResponse.cpp
     cwmpServer.cpp
     main.cpp
     tcpSessionThread.cpp)

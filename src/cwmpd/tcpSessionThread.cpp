@@ -7,8 +7,9 @@
 
 #include "cwmpCtx.h"
 #include "cwmpInform.h"
-#include "tcpSessionThread.h"
+#include "cwmpInformResponse.h"
 #include "cwmpSoap.h"
+#include "tcpSessionThread.h"
 
 TCPSessionThread::TCPSessionThread(int socketDescriptor, QObject *parent)
 : QThread(parent), _state(GET_HEADERS), _contentLen(0), _contentRead(0), _socketDescriptor(socketDescriptor),
@@ -63,6 +64,7 @@ void TCPSessionThread::handleGetContentState() {
 }
 
 void TCPSessionThread::sendInformResponse() {
+    CWMPInformResponse informResponse;
     QDomDocument informResponseDoc;
     QDomElement envelope = informResponseDoc.createElementNS("http://schemas.xmlsoap.org/soap/envelope/", "cwmp:Envelope");
     informResponseDoc.appendChild(envelope);
@@ -73,7 +75,8 @@ void TCPSessionThread::sendInformResponse() {
     QDomElement informResp = informResponseDoc.createElement("InformResponse");
     body.appendChild(informResp);
     QByteArray xmlStr = informResponseDoc.toString().toLatin1();
-    qDebug("%s, %d: InformResponse=%s", __FUNCTION__, __LINE__, xmlStr.constData());
+    //qDebug("%s, %d: InformResponse=%s", __FUNCTION__, __LINE__, xmlStr.constData());
+    qDebug("%s, %d: informResponse.content()=%s", __FUNCTION__, __LINE__, informResponse.content().constData());
 }
 
 void TCPSessionThread::handleGetHeadersState()  {
