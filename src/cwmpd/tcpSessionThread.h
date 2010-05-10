@@ -22,14 +22,15 @@ class TCPSessionThread : public QThread {
             GET_HEADERS,              //!< Initial state -- need to parse HTTP headers
             GET_CONTENT,              //!< Headers already parsed, need to read HTTP content
             PARSE_SOAP,               //!< Content read, need to parse SOAP envelope
-            SEND_INFORM_RESPONSE      //!< Need to send InformResponse back to CPE
+            SEND_INFORM_RESPONSE,     //!< Need to send InformResponse back to CPE
+            SEND_EMPTY_RESPONSE       //!< Need to send empty HTTP response
         };
 
         //! Constructor of TCP session thread
         /*! Constructs separate thread for TCP connection pointed by
          * socketDescriptor.
          */
-        TCPSessionThread(int socketDescriptor, QObject *parent = NULL);
+        TCPSessionThread(QTcpSocket *socket, QObject *parent = NULL);
 
         //! Default destructor
         ~TCPSessionThread();
@@ -48,13 +49,13 @@ class TCPSessionThread : public QThread {
         void getHeaders();
         void handleGetContentState();
         void sendInformResponse();
+        void sendEmptyResponse();
 
     private:
         void handleGetHeadersState();
         void handleParseSoapState();
 
-        int _socketDescriptor;
-        QTcpSocket _socket;
+        QTcpSocket *_socket;
         State _state;
         int _contentLen;
         QString _cookie;

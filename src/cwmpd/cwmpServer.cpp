@@ -6,14 +6,15 @@
 CWMPServer::CWMPServer(QObject *parent)
 : QTcpServer(parent) {
     qDebug("Creating CWMPServer...");
+    connect(this, SIGNAL(newConnection()), this, SLOT(handleIncomingConnection()));
 }
 
 CWMPServer::~CWMPServer() {
 }
 
-void CWMPServer::incomingConnection(int socketDescriptor) {
-    qDebug("New connection. Descriptor is %d", socketDescriptor);
-    TCPSessionThread *thread = new TCPSessionThread(socketDescriptor, this);
+void CWMPServer::handleIncomingConnection() {
+    qDebug("New connection.");
+    TCPSessionThread *thread = new TCPSessionThread(nextPendingConnection(), this);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     thread->run();
 }

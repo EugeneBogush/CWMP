@@ -22,15 +22,12 @@ class CWMPServer : public QTcpServer {
         //! Destructor
         ~CWMPServer();
 
-    protected:
+    protected slots:
         //! Handles incoming connection
         /*! Reimplemented from QTcpServer. Handles incoming connections
          *
-         * \param socketDescriptor raw socket's descriptor. Internally
-         * QTcpSocket.setSocketDescriptor() is called to attach to the
-         * connection
          */
-        void incomingConnection(int socketDescriptor);
+        void handleIncomingConnection();
 };
 
 #endif // _CWMP_SERVER_H_

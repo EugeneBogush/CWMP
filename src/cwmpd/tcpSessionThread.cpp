@@ -11,12 +11,14 @@
 #include "cwmpSoap.h"
 #include "tcpSessionThread.h"
 
-TCPSessionThread::TCPSessionThread(int socketDescriptor, QObject *parent)
-: QThread(parent), _state(GET_HEADERS), _contentLen(0), _contentRead(0), _socketDescriptor(socketDescriptor),
-_inform(NULL) {
+TCPSessionThread::TCPSessionThread(QTcpSocket *socket, QObject *parent)
+: QThread(parent), _socket(socket), _state(GET_HEADERS), _contentLen(0),
+_contentRead(0), _inform(NULL) {
+    qDebug("%s, %d: Constructor", __FUNCTION__, __LINE__);
 }
 
 TCPSessionThread::~TCPSessionThread() {
+    qDebug("%s, %d: Destructor", __FUNCTION__, __LINE__);
 }
 
 void TCPSessionThread::run() {
@@ -26,31 +28,34 @@ void TCPSessionThread::run() {
 void TCPSessionThread::stateMachine() {
     qDebug("%s, Hello...", __FUNCTION__);
     qDebug("%s, %d: _state=%d", __FUNCTION__, __LINE__, _state);
-    if(_state == GET_HEADERS) {
+    if(GET_HEADERS == _state) {
         qDebug("%s, %d: Set _state=%d", __FUNCTION__, __LINE__, _state);
         handleGetHeadersState();
-    } else if(_state == GET_CONTENT) {
+    } else if(GET_CONTENT == _state) {
         qDebug("%s, %d: Set _state=%d", __FUNCTION__, __LINE__, _state);
         handleGetContentState();
-    } else if(_state == PARSE_SOAP) {
+    } else if(PARSE_SOAP == _state) {
         qDebug("%s, %d: Set _state=%d", __FUNCTION__, __LINE__, _state);
         handleParseSoapState();
-    } else if(_state == SEND_INFORM_RESPONSE){
+    } else if(SEND_INFORM_RESPONSE == _state) {
         qDebug("%s, %d: Set _state=%d", __FUNCTION__, __LINE__, _state);
         sendInformResponse();
+    } else if(SEND_EMPTY_RESPONSE == _state) {
+        qDebug("%s, %d: Set _state=%d", __FUNCTION__, __LINE__, _state);
+        sendEmptyResponse();
     }
 }
 
 void TCPSessionThread::handleGetContentState() {
     qDebug("%s, Hello...", __FUNCTION__);
-    while(!_socket.bytesAvailable()) {
+    while(!_socket->bytesAvailable()) {
         qDebug("%s, %d: Nothing yet available to read", __FUNCTION__, __LINE__);
         QTimer::singleShot(10, this, SLOT(handleGetContentState()));
         qDebug("%s, %d: Nothing yet available to read", __FUNCTION__, __LINE__);
         return;
     }
 
-    _contentRead += _socket.read(_content.data() + _contentRead, _contentLen - _contentRead);
+    _contentRead += _socket->read(_content.data() + _contentRead, _contentLen - _contentRead);
     qDebug("%s, %d: _contentRead=%d, _contentLen=%d", __FUNCTION__, __LINE__, _contentRead, _contentLen);
     if(_contentRead < _contentLen) {
         qDebug("%s, %d: _contentRead=%d, _contentLen=%d", __FUNCTION__, __LINE__, _contentRead, _contentLen);
@@ -77,14 +82,26 @@ void TCPSessionThread::sendInformResponse() {
     QByteArray xmlStr = informResponseDoc.toString().toLatin1();
     //qDebug("%s, %d: InformResponse=%s", __FUNCTION__, __LINE__, xmlStr.constData());
     qDebug("%s, %d: informResponse.content()=%s", __FUNCTION__, __LINE__, informResponse.content().constData());
+    _socket->write(informResponse.content());
+    _socket->waitForBytesWritten();
+
+    _state = GET_HEADERS;
+    QTimer::singleShot(0, this, SLOT(stateMachine()));
+}
+
+void TCPSessionThread::sendEmptyResponse() {
+    QByteArray emptyLn;
+    emptyLn += 0x0d;
+    emptyLn += 0x0a;
+
+    QByteArray http("HTTP/1.1 204 No content");
+    http += emptyLn + emptyLn;
+    _socket->write(http);
+    _socket->waitForBytesWritten();
 }
 
 void TCPSessionThread::handleGetHeadersState()  {
-    if (!_socket.setSocketDescriptor(_socketDescriptor)) {
-        return;
-    }
-
-    _socket.waitForReadyRead();
+    _socket->waitForReadyRead();
     getHeaders();
 }
 
@@ -192,13 +209,13 @@ void TCPSessionThread::getHeaders() {
     emptyLine += 0x0d;
     emptyLine += 0x0a;
 
-    while(!_socket.canReadLine()) {
+    while(!_socket->canReadLine()) {
         qDebug("CAN'T READ LINE YET");
         QTimer::singleShot(10, this, SLOT(getHeaders()));
         return;
     }
 
-    line = _socket.readLine();
+    line = _socket->readLine();
     qDebug("%s: Got line <%s>", __FUNCTION__, line.constData());
 
     if(CONT_LEN == line.left(CONT_LEN.size())) {
@@ -211,7 +228,11 @@ void TCPSessionThread::getHeaders() {
         _cookie = cookieHdr.right(cookieHdr.size() - COOKIE.size());
     } else if(emptyLine == line) {
         // The end of headers
-        _state = GET_CONTENT;
+        if(0 != _contentLen)
+            _state = GET_CONTENT;
+        else
+            _state = SEND_EMPTY_RESPONSE;
+
         QTimer::singleShot(0, this, SLOT(stateMachine()));
         return;
     }
