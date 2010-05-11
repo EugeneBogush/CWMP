@@ -1,6 +1,7 @@
 #include "cwmpInformParser.h"
 
-CWMPInformParser::CWMPInformParser() {
+CWMPInformParser::CWMPInformParser()
+: _retryCount(0) {
     qDebug("%s, %d: Constructing NULL CWMPInformParser", __FUNCTION__, __LINE__);
 }
 
@@ -17,6 +18,9 @@ CWMPInformParser::CWMPInformParser(const QDomNode &informNode) {
             _maxEnvelopes = node.firstChild().toText().data();
             QByteArray dbgA = _maxEnvelopes.toLatin1();
             qDebug("%s, %d: maxEnvelopes=%s", __FUNCTION__, __LINE__, _maxEnvelopes. constData());
+        } else if(QString("RetryCount") == node.localName()) {
+            _retryCount = node.firstChild().toText().data().toInt();
+            qDebug("%s, %d: RetryCount=%d", __FUNCTION__, __LINE__, _retryCount);
         }
 
         node = node.nextSibling();
