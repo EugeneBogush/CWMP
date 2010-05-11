@@ -11,7 +11,9 @@ add_definitions(${QCA2_CFLAGS_OTHER})
 # the variable "cwmp_SRCS" contains all .cpp files of this project
 set(cwmpd_SRCS
     cwmpCtx.cpp
-    cwmpInform.cpp
+    cwmpDeviceIDParser.cpp
+    cwmpEventParser.cpp
+    cwmpInformParser.cpp
     cwmpInformResponse.cpp
     cwmpMethodResponse.cpp
     cwmpServer.cpp

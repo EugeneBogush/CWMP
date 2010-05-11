@@ -5,7 +5,9 @@
 #include <QTcpSocket>
 #include <QThread>
 
-class Inform;
+#include "cwmpInformParser.h"
+
+//class Inform;
 
 //! Representation of TCP session with specific CPE
 /*! This class represents single TCP session (NOT CWMP session). Since CWMP
@@ -61,7 +63,8 @@ class TCPSessionThread : public QThread {
         QString _cookie;
         int _contentRead;
         QByteArray _content;
-        Inform *_inform;
+        //Inform *_inform;
+        CWMPInformParser _informParser;
 };
 
 #endif // _CWMP_SESSION_THREAD_H_

@@ -6,15 +6,16 @@
 #include <QtCrypto>
 
 #include "cwmpCtx.h"
-#include "cwmpInform.h"
+//#include "cwmpInform.h"
 #include "cwmpInformResponse.h"
 #include "cwmpSoap.h"
 #include "tcpSessionThread.h"
 
 TCPSessionThread::TCPSessionThread(QTcpSocket *socket, QObject *parent)
 : QThread(parent), _socket(socket), _state(GET_HEADERS), _contentLen(0),
-_contentRead(0), _inform(NULL) {
+_contentRead(0) {
     qDebug("%s, %d: Constructor", __FUNCTION__, __LINE__);
+    connect(_socket, SIGNAL(disconnected()), this, SLOT(deleteLater()));
 }
 
 TCPSessionThread::~TCPSessionThread() {
@@ -22,7 +23,9 @@ TCPSessionThread::~TCPSessionThread() {
 }
 
 void TCPSessionThread::run() {
+    qDebug("%s, %d: Starting run()", __FUNCTION__, __LINE__);
     stateMachine();
+    qDebug("%s, %d: Ending run()", __FUNCTION__, __LINE__);
 }
 
 void TCPSessionThread::stateMachine() {
@@ -81,12 +84,12 @@ void TCPSessionThread::sendInformResponse() {
     body.appendChild(informResp);
     QByteArray xmlStr = informResponseDoc.toString().toLatin1();
     //qDebug("%s, %d: InformResponse=%s", __FUNCTION__, __LINE__, xmlStr.constData());
-    qDebug("%s, %d: informResponse.content()=%s", __FUNCTION__, __LINE__, informResponse.content().constData());
+    //qDebug("%s, %d: informResponse.content()=%s", __FUNCTION__, __LINE__, informResponse.content().constData());
     _socket->write(informResponse.content());
-    _socket->waitForBytesWritten();
-
-    _state = GET_HEADERS;
-    QTimer::singleShot(0, this, SLOT(stateMachine()));
+    if(_socket->waitForBytesWritten()) {
+        _state = GET_HEADERS;
+        QTimer::singleShot(0, this, SLOT(stateMachine()));
+    }
 }
 
 void TCPSessionThread::sendEmptyResponse() {
@@ -112,14 +115,13 @@ void TCPSessionThread::handleParseSoapState() {
     int colNo = 0;
     QByteArray name;
     bool gotMessageIsInform = FALSE;
-    ClientID clientID;
 
     soapMessage.setContent(_content, true, &errorMsg, &lineNo, &colNo);
     name = soapMessage.nodeName().toLatin1();
     qDebug("%s, %d: Document's node name is <%s>", __FUNCTION__, __LINE__, name.constData());
     QDomElement docElem = soapMessage.documentElement();
     QDomNamedNodeMap attributes = docElem.attributes();
-    qDebug("%s, %d: errorMsg=<%s>, lineNo=%d, colNo=%d", __FUNCTION__, __LINE__, errorMsg.toLatin1().constData(), lineNo, colNo);
+    //qDebug("%s, %d: errorMsg=<%s>, lineNo=%d, colNo=%d", __FUNCTION__, __LINE__, errorMsg.toLatin1().constData(), lineNo, colNo);
     name = docElem.tagName().toLatin1();
     qDebug("%s, %d: docElem.tagName()=%s", __FUNCTION__, __LINE__, name.constData());
     name = docElem.prefix().toLatin1();
@@ -158,34 +160,15 @@ void TCPSessionThread::handleParseSoapState() {
             qDebug("%s, %d: localName=%s", __FUNCTION__, __LINE__, name.constData());
             if(CWMP_NS == idNode.namespaceURI() && QString("ID") == idNode.localName()) {
                 qDebug("!!!!!!!!!!!!!!!!!!!!!!!!");
-                clientID.setSoapHdrId(idNode.toElement().text());
             }
-            qDebug("%s, %d: soapHdrId=<%s>", __FUNCTION__, __LINE__, clientID.soapHdrIdToByteArray().constData());
         } else if(SOAP_NS == n.namespaceURI() && QString("Body") == n.localName()) {
             qDebug("%s, %d: It's soap:Body, parsing it...", __FUNCTION__, __LINE__);
             // It's the body. Now we're expecting soap:Inform
-            QDomNode informNode = n.firstChild();
-            name = informNode.nodeName().toLatin1();
-            qDebug("%s, %d: informNode.nodeName()=<%s>", __FUNCTION__, __LINE__, name.constData());
-            if(QString("cwmp:Inform") == informNode.nodeName()) {
-                // it's Inform, gotta parse it
-                qDebug("%s, %d: About to parse Inform", __FUNCTION__, __LINE__);
-                //parseInform(informNode);
-                _inform = new Inform(informNode, clientID);
-                const ClientID *clientID = _inform->clientID();
-                if(clientID) {
-                    qDebug("%s, %d: manufacturer=<%s>", __FUNCTION__, __LINE__, clientID->manufacturerToByteArray().constData());
-                    qDebug("%s, %d: oui=<%s>", __FUNCTION__, __LINE__, clientID->ouiToByteArray().constData());
-                    qDebug("%s, %d: productClass=<%s>", __FUNCTION__, __LINE__, clientID->productClassToByteArray().constData());
-                    qDebug("%s, %d: serialNo=<%s>", __FUNCTION__, __LINE__, clientID->serialNoToByteArray().constData());
-                    qDebug("%s, %d: id=<%s>", __FUNCTION__, __LINE__, clientID->idToByteArray().constData());
-                    qDebug("%s, %d: soapHdrId=<%s>", __FUNCTION__, __LINE__, clientID->soapHdrIdToByteArray().constData());
-                }
-
+            QDomNode bodyNode = n.firstChild();
+            if(CWMP_NS == bodyNode.namespaceURI() && QString("Inform") == bodyNode.localName()) {
                 gotMessageIsInform = true;
+                _informParser = CWMPInformParser(bodyNode);
             }
-
-            informNode = informNode.nextSibling();
         }
 
         n = n.nextSibling();
