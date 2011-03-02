@@ -18,8 +18,9 @@ class CWMPInformParser {
     private:
         CWMPDeviceIDParser _deviceIDParser;
         CWMPEventParser _eventParser;
-        QString _maxEnvelopes;
-        int _retryCount;
+        unsigned _maxEnvelopes;
+        QString _currentTime;
+        unsigned _retryCount;
 };
 
 #endif // _CWMP_INFORM_PARSER_H
