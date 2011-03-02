@@ -4,16 +4,18 @@
 #include <QDomNode>
 #include <QList>
 #include <QString>
+#include <QVariant>
 
 class CWMPParameterListParser {
     public:
         class ParameterValueStruct {
             public:
-                ParameterValueStruct(const QString &name, const QString &value);
+                ParameterValueStruct(const QString &name, const QVariant &value);
                 ~ParameterValueStruct();
 
             private:
-                QString _name, _value;
+                QString _name;
+                QVariant _value;
         };
 
         typedef QList<ParameterValueStruct> ParameterList;
