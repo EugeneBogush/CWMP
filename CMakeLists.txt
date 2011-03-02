@@ -12,6 +12,9 @@ find_package(QCA2 REQUIRED)
 
 find_package(Doxygen)
 
+set(CMAKE_CXX_FLAGS_DEBUG "-Wall ${CMAKE_CXX_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_RELEASE "-Wall ${CMAKE_CXX_FLAGS_RELEASE}")
+
 add_subdirectory(src)
 
 if(DOXYGEN_FOUND)

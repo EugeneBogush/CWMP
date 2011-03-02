@@ -11,8 +11,8 @@ class CWMPEventParser {
                 CWMPEvent(const QString &event, const QString &cmdKey);
                 ~CWMPEvent();
 
-                QString eventCode() const { return _eventCode; }
-                QString cmdKey() const { return _cmdKey; }
+                const QString &eventCode() const { return _eventCode; }
+                const QString &cmdKey() const { return _cmdKey; }
 
             private:
                 QString _eventCode, _cmdKey;
