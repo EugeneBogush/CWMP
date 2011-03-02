@@ -142,8 +142,6 @@ void TCPSessionThread::handleParseSoapState() {
             qDebug("%s, %d: n.nodeName()=%s", __FUNCTION__, __LINE__, name.constData());
         }
 
-
-
         name = n.nodeName().toLatin1();
         qDebug("%s, %d: n.nodeName()=%s", __FUNCTION__, __LINE__, name.constData());
         name = n.namespaceURI().toLatin1();
@@ -163,8 +161,9 @@ void TCPSessionThread::handleParseSoapState() {
             }
         } else if(SOAP_NS == n.namespaceURI() && QString("Body") == n.localName()) {
             qDebug("%s, %d: It's soap:Body, parsing it...", __FUNCTION__, __LINE__);
-            // It's the body. Now we're expecting soap:Inform
+            // It's the body. Now we're expecting soap:<Method>
             QDomNode bodyNode = n.firstChild();
+            // Is it Inform?
             if(CWMP_NS == bodyNode.namespaceURI() && QString("Inform") == bodyNode.localName()) {
                 gotMessageIsInform = true;
                 _informParser = CWMPInformParser(bodyNode);
