@@ -27,6 +27,8 @@ CWMPInformParser::CWMPInformParser(const QDomNode &informNode) {
 
         node = node.nextSibling();
     }
+
+    qDebug("It's a good place to use D-Bus for announcing an Inform");
 }
 
 CWMPInformParser::~CWMPInformParser() {
