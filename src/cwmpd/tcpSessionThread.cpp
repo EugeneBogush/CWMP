@@ -136,7 +136,7 @@ void TCPSessionThread::handleParseSoapState() {
 
         QDomNamedNodeMap attributes = n.attributes();
         qDebug("%s, %d: There are %d attributes here", __FUNCTION__, __LINE__, attributes.length());
-        for(int i = 0; i < attributes.length(); ++i) {
+        for(unsigned i = 0; i < attributes.length(); ++i) {
             QDomNode n = attributes.item(i);
             name = n.nodeName().toLatin1();
             qDebug("%s, %d: n.nodeName()=%s", __FUNCTION__, __LINE__, name.constData());
@@ -184,7 +184,6 @@ void TCPSessionThread::handleParseSoapState() {
 void TCPSessionThread::getHeaders() {
     QByteArray line;
     QByteArray emptyLine;
-    int cLen;
     const QString CONT_LEN("Content-Length: ");
     const QString COOKIE("Cookie:");
 
