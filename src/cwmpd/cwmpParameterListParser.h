@@ -21,6 +21,7 @@ class CWMPParameterListParser {
         CWMPParameterListParser();
         CWMPParameterListParser(const QDomNode &parameterListNode);
         ~CWMPParameterListParser();
+        void addParameter(const QDomNode &parameter);
 
     private:
         ParameterList _parameters;

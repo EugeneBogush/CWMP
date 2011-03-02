@@ -6,6 +6,7 @@
 
 #include "cwmpDeviceIDParser.h"
 #include "cwmpEventParser.h"
+#include "cwmpParameterListParser.h"
 
 class CWMPInformParser {
     public:
@@ -18,6 +19,7 @@ class CWMPInformParser {
     private:
         CWMPDeviceIDParser _deviceIDParser;
         CWMPEventParser _eventParser;
+        CWMPParameterListParser _parameterListParser;
         unsigned _maxEnvelopes;
         QString _currentTime;
         unsigned _retryCount;

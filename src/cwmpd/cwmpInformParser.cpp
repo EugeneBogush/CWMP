@@ -21,6 +21,8 @@ CWMPInformParser::CWMPInformParser(const QDomNode &informNode) {
         } else if(QString("RetryCount") == node.localName()) {
             _retryCount = node.firstChild().toText().data().toUInt();
             qDebug("%s, %d: RetryCount=%d", __FUNCTION__, __LINE__, _retryCount);
+        } else if(QString("ParameterList") == node.localName()) {
+            _parameterListParser = CWMPParameterListParser(node);
         }
 
         node = node.nextSibling();
