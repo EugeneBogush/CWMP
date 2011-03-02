@@ -16,6 +16,7 @@ set(cwmpd_SRCS
     cwmpInformParser.cpp
     cwmpInformResponse.cpp
     cwmpMethodResponse.cpp
+    cwmpParameterListParser.cpp
     cwmpServer.cpp
     main.cpp
     tcpSessionThread.cpp)
