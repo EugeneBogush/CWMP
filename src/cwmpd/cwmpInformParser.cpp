@@ -1,4 +1,5 @@
 #include "cwmpDeviceIDParser.h"
+#include "cwmpEventParser.h"
 #include "cwmpInformParser.h"
 
 CWMPInformParser::CWMPInformParser() {
@@ -14,7 +15,8 @@ CWMPInformParser::CWMPInformParser(const QDomNode &informNode) {
             CWMPDeviceIDParser deviceIDParser = CWMPDeviceIDParser(node);
             _inform.setDeviceID(deviceIDParser.deviceID());
         } else if(QString("Event") == node.localName()) {
-            _eventParser = CWMPEventParser(node);
+            CWMPEventParser eventParser(node);
+            _event = eventParser.event();
         } else if(QString("MaxEnvelopes") == node.localName()) {
             _inform.setMaxEnvelopes(node.firstChild().toText().data().toUInt());
         } else if(QString("CurrentTime") == node.localName()) {
@@ -39,6 +41,13 @@ CWMPInformParser::CWMPInformParser(const QDomNode &informNode) {
            _inform.deviceID().productClass().toAscii().constData());
     qDebug("SerialNumber=%s",
            _inform.deviceID().serialNumber().toAscii().constData());
+
+    qDebug("\nEvents:");
+    for(int i = 0; i < _event.events().count(); ++i)
+        qDebug("[%d]=%s", i,
+               _event.events()[i].eventCode().toAscii().constData());
+
+    qDebug("\n");
     qDebug("It's a good place to use D-Bus for announcing an Inform");
 }
 

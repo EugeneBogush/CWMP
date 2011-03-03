@@ -1,12 +1,5 @@
 #include "cwmpEventParser.h"
 
-CWMPEventParser::CWMPEvent::CWMPEvent(const QString &eventCode, const QString &cmdKey)
-: _eventCode(eventCode), _cmdKey(cmdKey) {
-}
-
-CWMPEventParser::CWMPEvent::~CWMPEvent() {
-}
-
 CWMPEventParser::CWMPEventParser() {
 }
 
@@ -38,6 +31,6 @@ void CWMPEventParser::addEvent(const QDomNode &event) {
         node = node.nextSibling();
     }
 
-    _events.append(CWMPEvent(eventCode, cmdKey));
+    _event.events().append(CWMPEvent::Event(eventCode, cmdKey));
 }
 
