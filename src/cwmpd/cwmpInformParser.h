@@ -4,7 +4,6 @@
 #include <QDomNode>
 #include <QString>
 
-#include "cwmpDeviceIDParser.h"
 #include "cwmpEventParser.h"
 #include "cwmpInform.h"
 #include "cwmpParameterListParser.h"
@@ -14,13 +13,12 @@ class CWMPInformParser {
         CWMPInformParser();
         CWMPInformParser(const QDomNode &informNode);
         ~CWMPInformParser();
-        const CWMPDeviceIDParser &deviceID() const { return _deviceIDParser; }
+        const CWMPInform &inform() const { return _inform; }
         const CWMPEventParser &event() const { return _eventParser; }
 
     private:
         CWMPInform _inform;
 
-        CWMPDeviceIDParser _deviceIDParser;
         CWMPEventParser _eventParser;
         CWMPParameterListParser _parameterListParser;
 };
