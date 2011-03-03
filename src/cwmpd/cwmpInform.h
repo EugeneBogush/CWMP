@@ -2,6 +2,8 @@
 #define CWMPINFORM_H
 
 #include "cwmpDeviceID.h"
+#include "cwmpEvent.h"
+#include "cwmpParameterList.h"
 
 #include <QString>
 
@@ -12,6 +14,13 @@ public:
 
     const CWMPDeviceID &deviceID() const { return _deviceID; }
     void setDeviceID(const CWMPDeviceID &deviceID) { _deviceID = deviceID; }
+
+    const CWMPEvent &event() const { return _event; }
+    void setEvent(const CWMPEvent &event) { _event = event; }
+
+    const CWMPParameterList &parameterList() const { return _parameterList; }
+    void setParameterList(const CWMPParameterList &parameterList)
+        { _parameterList = parameterList; }
 
     unsigned maxEnvelopes() const { return _maxEnvelopes; }
     void setMaxEnvelopes(int maxEnvelopes) { _maxEnvelopes = maxEnvelopes; }
@@ -25,6 +34,8 @@ public:
 
 private:
     CWMPDeviceID _deviceID;
+    CWMPEvent _event;
+    CWMPParameterList _parameterList;
     unsigned _maxEnvelopes;
     QString _currentTime;
     unsigned _retryCount;

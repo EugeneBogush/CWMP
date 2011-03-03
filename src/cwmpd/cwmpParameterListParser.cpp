@@ -1,13 +1,5 @@
 #include "cwmpParameterListParser.h"
 
-CWMPParameterListParser::ParameterValueStruct::ParameterValueStruct(
-        const QString &name, const QVariant &value)
-: _name(name), _value(value) {
-}
-
-CWMPParameterListParser::ParameterValueStruct::~ParameterValueStruct() {
-}
-
 void CWMPParameterListParser::addParameter(const QDomNode &parameter) {
     QDomNode node = parameter.firstChild();
     QString name;
@@ -42,7 +34,8 @@ void CWMPParameterListParser::addParameter(const QDomNode &parameter) {
         node = node.nextSibling();
     }
 
-    _parameters.append(ParameterValueStruct(name, value));
+    _parameters.parameters().append(
+            CWMPParameterList::ParameterValueStruct(name, value));
 }
 
 CWMPParameterListParser::CWMPParameterListParser() {

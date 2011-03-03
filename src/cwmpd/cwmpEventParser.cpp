@@ -31,6 +31,7 @@ void CWMPEventParser::addEvent(const QDomNode &event) {
         node = node.nextSibling();
     }
 
-    _event.events().append(CWMPEvent::Event(eventCode, cmdKey));
+    _event.events().append(
+            CWMPEvent::Event(eventCode, cmdKey));
 }
 

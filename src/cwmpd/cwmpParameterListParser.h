@@ -1,32 +1,21 @@
 #ifndef _CWMP_PARAMETER_LIST_PARSER_H_
 #define _CWMP_PARAMETER_LIST_PARSER_H_
 
+#include "cwmpParameterList.h"
+
 #include <QDomNode>
-#include <QList>
 #include <QString>
-#include <QVariant>
 
 class CWMPParameterListParser {
     public:
-        class ParameterValueStruct {
-            public:
-                ParameterValueStruct(const QString &name, const QVariant &value);
-                ~ParameterValueStruct();
-
-            private:
-                QString _name;
-                QVariant _value;
-        };
-
-        typedef QList<ParameterValueStruct> ParameterList;
-
         CWMPParameterListParser();
         CWMPParameterListParser(const QDomNode &parameterListNode);
         ~CWMPParameterListParser();
         void addParameter(const QDomNode &parameter);
+        const CWMPParameterList &parameters() const { return _parameters; }
 
     private:
-        ParameterList _parameters;
+        CWMPParameterList _parameters;
 };
 
 #endif // _CWMP_PARAMETER_LIST_PARSER_H_

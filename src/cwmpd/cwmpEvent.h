@@ -24,6 +24,7 @@ public:
     CWMPEvent();
 
     EventList &events() { return _events; }
+    const EventList &events() const { return _events; }
 
 private:
     EventList _events;
