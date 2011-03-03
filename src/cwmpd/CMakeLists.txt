@@ -13,6 +13,7 @@ set(cwmpd_SRCS
     cwmpCtx.cpp
     cwmpDeviceID.cpp
     cwmpDeviceIDParser.cpp
+    cwmpEvent.cpp
     cwmpEventParser.cpp
     cwmpInform.cpp
     cwmpInformParser.cpp
