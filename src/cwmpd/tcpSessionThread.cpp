@@ -167,6 +167,32 @@ void TCPSessionThread::handleParseSoapState() {
             if(CWMP_NS == bodyNode.namespaceURI() && QString("Inform") == bodyNode.localName()) {
                 gotMessageIsInform = true;
                 _informParser = CWMPInformParser(bodyNode);
+                qDebug("MaxEnvelopes=%d",
+                       _informParser.inform().maxEnvelopes());
+                qDebug("CurrentTime=%s",
+                       _informParser.inform().currentTime().toAscii().constData());
+                qDebug("RetryCount=%d",
+                       _informParser.inform().retryCount());
+
+                qDebug("Manufacturer=%s",
+                       _informParser.inform().deviceID().manufacturer().toAscii().constData());
+                qDebug("OUI=%s", _informParser.inform().deviceID().oui().toAscii().constData());
+                qDebug("ProductClass=%s",
+                       _informParser.inform().deviceID().productClass().toAscii().constData());
+                qDebug("SerialNumber=%s",
+                       _informParser.inform().deviceID().serialNumber().toAscii().constData());
+
+                qDebug("\nEvents:");
+                for(int i = 0; i < _informParser.inform().event().events().count(); ++i)
+                    qDebug("[%d]=%s", i,
+                           _informParser.inform().event().events()[i].eventCode().toAscii().constData());
+
+                qDebug(" ");
+                for(int i = 0; i < _informParser.inform().parameterList().parameters().count(); ++i)
+                    qDebug("[%d]: name=%s, value=%s", i,
+                           _informParser.inform().parameterList().parameters()[i].name().toAscii().constData(),
+                           _informParser.inform().parameterList().parameters()[i].value().toString().toAscii().constData());
+                qDebug("It's a good place to use D-Bus for announcing an Inform");
             }
         }
 
