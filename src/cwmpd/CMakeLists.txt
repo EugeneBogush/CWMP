@@ -19,6 +19,7 @@ set(cwmpd_SRCS
     cwmpInformParser.cpp
     cwmpInformResponse.cpp
     cwmpMethodResponse.cpp
+    cwmpParameterList.cpp
     cwmpParameterListParser.cpp
     cwmpServer.cpp
     main.cpp
