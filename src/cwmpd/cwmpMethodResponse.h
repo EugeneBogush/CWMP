@@ -12,7 +12,6 @@ class CWMPMethodResponse {
     protected:
         QByteArray line(QByteArray l) const;
         virtual QByteArray soapContent() const = 0;
-
 };
 
 #endif // _CWMP_METHOD_RESPONSE_H_
