@@ -6,6 +6,7 @@
 
 #include "cwmpDeviceIDParser.h"
 #include "cwmpEventParser.h"
+#include "cwmpInform.h"
 #include "cwmpParameterListParser.h"
 
 class CWMPInformParser {
@@ -17,12 +18,11 @@ class CWMPInformParser {
         const CWMPEventParser &event() const { return _eventParser; }
 
     private:
+        CWMPInform _inform;
+
         CWMPDeviceIDParser _deviceIDParser;
         CWMPEventParser _eventParser;
         CWMPParameterListParser _parameterListParser;
-        unsigned _maxEnvelopes;
-        QString _currentTime;
-        unsigned _retryCount;
 };
 
 #endif // _CWMP_INFORM_PARSER_H
