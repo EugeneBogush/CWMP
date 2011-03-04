@@ -1,20 +1,29 @@
 #include <iostream>
 
+#include <QtDBus/QDBusMetaType>
+#include <QtDBus/QDBusConnection>
 #include <QDomDocument>
 #include <QTimer>
 
 #include <QtCrypto>
 
 #include "cwmpCtx.h"
-//#include "cwmpInform.h"
+#include "cwmpInformParser.h"
 #include "cwmpInformResponse.h"
 #include "cwmpSoap.h"
 #include "tcpSessionThread.h"
+#include "cwmpdAdapter.h"
 
 TCPSessionThread::TCPSessionThread(QTcpSocket *socket, QObject *parent)
 : QThread(parent), _socket(socket), _state(GET_HEADERS), _contentLen(0),
 _contentRead(0) {
     qDebug("%s, %d: Constructor", __FUNCTION__, __LINE__);
+    _pDbusAdapter = new CWMPDAdapter(this);
+    qDBusRegisterMetaType<CWMPInform>();
+    QDBusConnection connection = QDBusConnection::sessionBus();
+    connection.registerObject("/CWMPd", this);
+    connection.registerService("org.prezu_cwmp");
+
     connect(_socket, SIGNAL(disconnected()), this, SLOT(deleteLater()));
 }
 
@@ -166,33 +175,34 @@ void TCPSessionThread::handleParseSoapState() {
             // Is it Inform?
             if(CWMP_NS == bodyNode.namespaceURI() && QString("Inform") == bodyNode.localName()) {
                 gotMessageIsInform = true;
-                _informParser = CWMPInformParser(bodyNode);
+                CWMPInformParser informParser = CWMPInformParser(bodyNode);
                 qDebug("MaxEnvelopes=%d",
-                       _informParser.inform().maxEnvelopes());
+                       informParser.inform().maxEnvelopes());
                 qDebug("CurrentTime=%s",
-                       _informParser.inform().currentTime().toAscii().constData());
+                       informParser.inform().currentTime().toAscii().constData());
                 qDebug("RetryCount=%d",
-                       _informParser.inform().retryCount());
+                       informParser.inform().retryCount());
 
                 qDebug("Manufacturer=%s",
-                       _informParser.inform().deviceID().manufacturer().toAscii().constData());
-                qDebug("OUI=%s", _informParser.inform().deviceID().oui().toAscii().constData());
+                       informParser.inform().deviceID().manufacturer().toAscii().constData());
+                qDebug("OUI=%s", informParser.inform().deviceID().oui().toAscii().constData());
                 qDebug("ProductClass=%s",
-                       _informParser.inform().deviceID().productClass().toAscii().constData());
+                       informParser.inform().deviceID().productClass().toAscii().constData());
                 qDebug("SerialNumber=%s",
-                       _informParser.inform().deviceID().serialNumber().toAscii().constData());
+                       informParser.inform().deviceID().serialNumber().toAscii().constData());
 
                 qDebug("\nEvents:");
-                for(int i = 0; i < _informParser.inform().event().events().count(); ++i)
+                for(int i = 0; i < informParser.inform().event().events().count(); ++i)
                     qDebug("[%d]=%s", i,
-                           _informParser.inform().event().events()[i].eventCode().toAscii().constData());
+                           informParser.inform().event().events()[i].eventCode().toAscii().constData());
 
                 qDebug(" ");
-                for(int i = 0; i < _informParser.inform().parameterList().parameters().count(); ++i)
+                for(int i = 0; i < informParser.inform().parameterList().parameters().count(); ++i)
                     qDebug("[%d]: name=%s, value=%s", i,
-                           _informParser.inform().parameterList().parameters()[i].name().toAscii().constData(),
-                           _informParser.inform().parameterList().parameters()[i].value().toString().toAscii().constData());
+                           informParser.inform().parameterList().parameters()[i].name().toAscii().constData(),
+                           informParser.inform().parameterList().parameters()[i].value().toString().toAscii().constData());
                 qDebug("It's a good place to use D-Bus for announcing an Inform");
+                _pDbusAdapter->emitInform(informParser.inform());
             }
         }
 

@@ -1,6 +1,7 @@
 #ifndef CWMPDEVICEID_H
 #define CWMPDEVICEID_H
 
+#include <QtDBus/QDBusArgument>
 #include <QString>
 
 class CWMPDeviceID
@@ -26,5 +27,9 @@ private:
     QString _productClass;
     QString _serialNumber;
 };
+
+QDBusArgument &operator <<(QDBusArgument &, const CWMPDeviceID &);
+const QDBusArgument &operator >>(const QDBusArgument &, CWMPDeviceID &);
+
 
 #endif // CWMPDEVICEID_H

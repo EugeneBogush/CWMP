@@ -5,6 +5,7 @@
 #include "cwmpEvent.h"
 #include "cwmpParameterList.h"
 
+#include <QtDBus/QDBusArgument>
 #include <QString>
 
 class CWMPInform
@@ -33,12 +34,16 @@ public:
     void setRetryCount(unsigned retryCount) { _retryCount = retryCount; }
 
 private:
-    CWMPDeviceID _deviceID;
-    CWMPEvent _event;
-    CWMPParameterList _parameterList;
     unsigned _maxEnvelopes;
     QString _currentTime;
     unsigned _retryCount;
+    CWMPDeviceID _deviceID;
+    CWMPEvent _event;
+    CWMPParameterList _parameterList;
 };
+Q_DECLARE_METATYPE(CWMPInform)
+
+QDBusArgument &operator <<(QDBusArgument &, const CWMPInform &);
+const QDBusArgument &operator >>(const QDBusArgument &, CWMPInform &);
 
 #endif // CWMPINFORM_H

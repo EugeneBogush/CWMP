@@ -1,4 +1,6 @@
 #include <QCoreApplication>
+
+#include "cwmpInform.h"
 #include "cwmpServer.h"
 
 int main(int argc, char *argv[]) {

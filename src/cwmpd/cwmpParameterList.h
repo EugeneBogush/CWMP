@@ -1,6 +1,7 @@
 #ifndef CWMPPARAMETERLIST_H
 #define CWMPPARAMETERLIST_H
 
+#include <QtDBus/QDBusArgument>
 #include <QList>
 #include <QString>
 #include <QVariant>
@@ -30,5 +31,8 @@ public:
 private:
     ParameterList _parameters;
 };
+
+QDBusArgument &operator <<(QDBusArgument &, const CWMPParameterList &);
+const QDBusArgument &operator >>(const QDBusArgument &, CWMPParameterList &);
 
 #endif // CWMPPARAMETERLIST_H

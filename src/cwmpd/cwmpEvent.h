@@ -1,6 +1,7 @@
 #ifndef CWMPEVENT_H
 #define CWMPEVENT_H
 
+#include <QtDBus/QDBusArgument>
 #include <QList>
 #include <QString>
 
@@ -29,5 +30,8 @@ public:
 private:
     EventList _events;
 };
+
+QDBusArgument &operator <<(QDBusArgument &, const CWMPEvent &);
+const QDBusArgument &operator >>(const QDBusArgument &, CWMPEvent &);
 
 #endif // CWMPEVENT_H
