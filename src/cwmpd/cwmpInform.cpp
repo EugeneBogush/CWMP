@@ -4,6 +4,9 @@ CWMPInform::CWMPInform()
 : _maxEnvelopes(0), _retryCount(0) {
 }
 
+CWMPInform::~CWMPInform() {
+}
+
 QDBusArgument &operator <<(QDBusArgument &arg, const CWMPInform &rhs) {
     arg.beginStructure();
 

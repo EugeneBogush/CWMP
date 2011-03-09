@@ -4,6 +4,10 @@ CWMPDeviceID::CWMPDeviceID()
 {
 }
 
+CWMPDeviceID::~CWMPDeviceID()
+{
+}
+
 QDBusArgument &operator <<(QDBusArgument &arg, const CWMPDeviceID &rhs) {
     arg.beginStructure();
     arg << rhs.manufacturer() << rhs.oui() << rhs.productClass() <<

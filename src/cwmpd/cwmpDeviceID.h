@@ -8,6 +8,7 @@ class CWMPDeviceID
 {
 public:
     CWMPDeviceID();
+    ~CWMPDeviceID();
 
     const QString &manufacturer() const { return _manufacturer; }
     void setManufacturer(QString manufacturer) { _manufacturer = manufacturer; }

@@ -23,6 +23,7 @@ public:
     typedef QList<Event> EventList;
 
     CWMPEvent();
+    ~CWMPEvent();
 
     EventList &events() { return _events; }
     const EventList &events() const { return _events; }

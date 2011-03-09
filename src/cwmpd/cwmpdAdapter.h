@@ -11,6 +11,7 @@ class CWMPDAdapter : public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "org.prezu_cwmp")
 public:
     CWMPDAdapter(QObject *);
+    ~CWMPDAdapter();
 
     void emitInform(const CWMPInform &);
 

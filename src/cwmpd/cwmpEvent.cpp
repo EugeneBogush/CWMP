@@ -11,6 +11,10 @@ CWMPEvent::CWMPEvent()
 {
 }
 
+CWMPEvent::~CWMPEvent()
+{
+}
+
 QDBusArgument &operator <<(QDBusArgument &arg, const CWMPEvent &rhs) {
     int size = rhs.events().size();
 

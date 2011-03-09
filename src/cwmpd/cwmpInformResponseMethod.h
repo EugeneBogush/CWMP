@@ -6,7 +6,7 @@
 class CWMPInformResponseMethod : public CWMPMethod {
     public:
         CWMPInformResponseMethod();
-        ~CWMPInformResponseMethod();
+        virtual ~CWMPInformResponseMethod();
 
     protected:
         virtual QByteArray soapContent() const;

@@ -24,6 +24,7 @@ public:
     typedef QList<ParameterValueStruct> ParameterList;
 
     CWMPParameterList();
+    ~CWMPParameterList();
 
     ParameterList &parameters() { return _parameters; }
     const ParameterList &parameters() const { return _parameters; }

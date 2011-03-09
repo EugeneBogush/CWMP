@@ -6,7 +6,7 @@
 class CWMPMethod {
     public:
         CWMPMethod();
-        ~CWMPMethod();
+        virtual ~CWMPMethod();
         QByteArray content() const;
 
     protected:

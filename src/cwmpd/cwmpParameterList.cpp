@@ -11,6 +11,9 @@ CWMPParameterList::ParameterValueStruct::~ParameterValueStruct() {
 CWMPParameterList::CWMPParameterList() {
 }
 
+CWMPParameterList::~CWMPParameterList() {
+}
+
 QDBusArgument &operator <<(QDBusArgument &arg, const CWMPParameterList &rhs) {
     int size = rhs.parameters().size();
 

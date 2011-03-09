@@ -3,3 +3,7 @@
 CWMPGetParameterValues::CWMPGetParameterValues()
 {
 }
+
+CWMPGetParameterValues::~CWMPGetParameterValues()
+{
+}

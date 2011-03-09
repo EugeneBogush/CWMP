@@ -12,6 +12,7 @@ class CWMPInform
 {
 public:
     CWMPInform();
+    ~CWMPInform();
 
     const CWMPDeviceID &deviceID() const { return _deviceID; }
     void setDeviceID(const CWMPDeviceID &deviceID) { _deviceID = deviceID; }

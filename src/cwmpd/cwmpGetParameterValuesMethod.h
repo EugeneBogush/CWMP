@@ -7,6 +7,7 @@ class CWMPGetParameterValuesMethod : public CWMPMethod
 {
 public:
     CWMPGetParameterValuesMethod();
+    virtual ~CWMPGetParameterValuesMethod();
 };
 
 #endif // CWMPGETPARAMETERVALUESMETHOD_H
