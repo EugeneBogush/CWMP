@@ -1,20 +1,16 @@
 #include <QDomDocument>
 
-#include "cwmpInformResponse.h"
+#include "cwmpInformResponseMethod.h"
 #include "soap.h"
 
-CWMPInformResponse::CWMPInformResponse() {
+CWMPInformResponseMethod::CWMPInformResponseMethod() {
 }
 
-CWMPInformResponse::~CWMPInformResponse() {
+CWMPInformResponseMethod::~CWMPInformResponseMethod() {
 }
 
-QByteArray CWMPInformResponse::soapContent() const {
+QByteArray CWMPInformResponseMethod::soapContent() const {
     QDomDocument informResponseDoc;
-    /*
-    QDomProcessingInstruction instr = informResponseDoc.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\" ");
-    informResponseDoc.appendChild(instr);
-    */
 
     QDomElement envelope = informResponseDoc.createElementNS(SOAP_NS, "soap:Envelope");
     informResponseDoc.appendChild(envelope);

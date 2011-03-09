@@ -9,7 +9,7 @@
 
 #include "cwmpCtx.h"
 #include "cwmpInformParser.h"
-#include "cwmpInformResponse.h"
+#include "cwmpInformResponseMethod.h"
 #include "cwmpSoap.h"
 #include "tcpSessionThread.h"
 #include "cwmpdAdapter.h"
@@ -81,7 +81,7 @@ void TCPSessionThread::handleGetContentState() {
 }
 
 void TCPSessionThread::sendInformResponse() {
-    CWMPInformResponse informResponse;
+    CWMPInformResponseMethod informResponse;
     QDomDocument informResponseDoc;
     QDomElement envelope = informResponseDoc.createElementNS("http://schemas.xmlsoap.org/soap/envelope/", "cwmp:Envelope");
     informResponseDoc.appendChild(envelope);
@@ -92,8 +92,6 @@ void TCPSessionThread::sendInformResponse() {
     QDomElement informResp = informResponseDoc.createElement("InformResponse");
     body.appendChild(informResp);
     QByteArray xmlStr = informResponseDoc.toString().toLatin1();
-    //qDebug("%s, %d: InformResponse=%s", __FUNCTION__, __LINE__, xmlStr.constData());
-    //qDebug("%s, %d: informResponse.content()=%s", __FUNCTION__, __LINE__, informResponse.content().constData());
     _socket->write(informResponse.content());
     if(_socket->waitForBytesWritten()) {
         _state = GET_HEADERS;
@@ -158,7 +156,6 @@ void TCPSessionThread::handleParseSoapState() {
         name = n.localName().toLatin1();
         qDebug("%s, %d: localName=%s", __FUNCTION__, __LINE__, name.constData());
 
-        //if(QString("soap:Header") == n.nodeName()) {
         if(SOAP_NS == n.namespaceURI() && QString("Header") == n.localName()) {
             QDomNode idNode = n.firstChild();
             name = idNode.namespaceURI().toLatin1();

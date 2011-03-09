@@ -3,10 +3,10 @@
 
 #include "cwmpMethodResponse.h"
 
-class CWMPInformResponse : public CWMPMethodResponse {
+class CWMPInformResponseMethod : public CWMPMethodResponse {
     public:
-        CWMPInformResponse();
-        ~CWMPInformResponse();
+        CWMPInformResponseMethod();
+        ~CWMPInformResponseMethod();
 
     protected:
         virtual QByteArray soapContent() const;
