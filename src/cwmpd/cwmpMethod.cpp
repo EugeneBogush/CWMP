@@ -1,14 +1,14 @@
 #include <QString>
 
-#include "cwmpMethodResponse.h"
+#include "cwmpMethod.h"
 
-CWMPMethodResponse::CWMPMethodResponse() {
+CWMPMethod::CWMPMethod() {
 }
 
-CWMPMethodResponse::~CWMPMethodResponse() {
+CWMPMethod::~CWMPMethod() {
 }
 
-QByteArray CWMPMethodResponse::content() const {
+QByteArray CWMPMethod::content() const {
     QByteArray msg;
     QByteArray cont = soapContent();
 
@@ -21,7 +21,7 @@ QByteArray CWMPMethodResponse::content() const {
     return msg;
 }
 
-QByteArray CWMPMethodResponse::line(QByteArray l) const {
+QByteArray CWMPMethod::line(QByteArray l) const {
     l += 0x0d;
     l += 0x0a;
 

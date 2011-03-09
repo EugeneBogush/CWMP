@@ -1,12 +1,12 @@
-#ifndef _CWMP_METHOD_RESPONSE_H_
-#define _CWMP_METHOD_RESPONSE_H_
+#ifndef _CWMP_METHOD_H_
+#define _CWMP_METHOD_H_
 
 #include <QByteArray>
 
-class CWMPMethodResponse {
+class CWMPMethod {
     public:
-        CWMPMethodResponse();
-        ~CWMPMethodResponse();
+        CWMPMethod();
+        ~CWMPMethod();
         QByteArray content() const;
 
     protected:
@@ -14,4 +14,4 @@ class CWMPMethodResponse {
         virtual QByteArray soapContent() const = 0;
 };
 
-#endif // _CWMP_METHOD_RESPONSE_H_
+#endif // _CWMP_METHOD_H_

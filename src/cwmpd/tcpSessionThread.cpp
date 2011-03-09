@@ -52,6 +52,8 @@ void TCPSessionThread::stateMachine() {
     } else if(SEND_INFORM_RESPONSE == _state) {
         qDebug("%s, %d: Set _state=%d", __FUNCTION__, __LINE__, _state);
         sendInformResponse();
+    } else if(SEND_GET_PARAMETER_VALUES == _state) {
+        sendGetParameterValues();
     } else if(SEND_EMPTY_RESPONSE == _state) {
         qDebug("%s, %d: Set _state=%d", __FUNCTION__, __LINE__, _state);
         sendEmptyResponse();
@@ -97,6 +99,10 @@ void TCPSessionThread::sendInformResponse() {
         _state = GET_HEADERS;
         QTimer::singleShot(0, this, SLOT(stateMachine()));
     }
+}
+
+void TCPSessionThread::sendGetParameterValues() {
+
 }
 
 void TCPSessionThread::sendEmptyResponse() {
@@ -245,7 +251,9 @@ void TCPSessionThread::getHeaders() {
         if(0 != _contentLen)
             _state = GET_CONTENT;
         else
-            _state = SEND_EMPTY_RESPONSE;
+            //_state = SEND_EMPTY_RESPONSE;
+            // TODO: ONLY temporarily sending GetParameterValues
+            _state = SEND_GET_PARAMETER_VALUES;
 
         QTimer::singleShot(0, this, SLOT(stateMachine()));
         return;

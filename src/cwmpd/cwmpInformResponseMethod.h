@@ -1,9 +1,9 @@
 #ifndef _CWMP_INFORM_RESPONSE_H_
 #define _CWMP_INFORM_RESPONSE_H_
 
-#include "cwmpMethodResponse.h"
+#include "cwmpMethod.h"
 
-class CWMPInformResponseMethod : public CWMPMethodResponse {
+class CWMPInformResponseMethod : public CWMPMethod {
     public:
         CWMPInformResponseMethod();
         ~CWMPInformResponseMethod();
