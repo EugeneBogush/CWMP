@@ -16,6 +16,8 @@ set(cwmpd_SRCS
     cwmpDeviceIDParser.cpp
     cwmpEvent.cpp
     cwmpEventParser.cpp
+    cwmpGetParameterValues.cpp
+    cwmpGetParameterValuesMethod.cpp
     cwmpInform.cpp
     cwmpInformParser.cpp
     cwmpInformResponseMethod.cpp
