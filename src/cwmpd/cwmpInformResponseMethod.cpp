@@ -1,7 +1,6 @@
 #include <QDomDocument>
 
 #include "cwmpInformResponseMethod.h"
-#include "soap.h"
 
 CWMPInformResponseMethod::CWMPInformResponseMethod(
         const CWMPInformResponse &) {

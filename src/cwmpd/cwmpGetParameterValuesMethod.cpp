@@ -1,7 +1,6 @@
 #include <QDomDocument>
 
 #include "cwmpGetParameterValuesMethod.h"
-#include "soap.h"
 
 CWMPGetParameterValuesMethod::CWMPGetParameterValuesMethod(
         const CWMPGetParameterValues &getParameterValues)
