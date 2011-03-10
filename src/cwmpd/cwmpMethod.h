@@ -2,6 +2,8 @@
 #define _CWMP_METHOD_H_
 
 #include <QByteArray>
+#include <QDomDocument>
+#include <QDomElement>
 
 class CWMPMethod {
     public:
@@ -11,7 +13,9 @@ class CWMPMethod {
 
     protected:
         QByteArray line(QByteArray l) const;
-        virtual QByteArray soapContent() const = 0;
+        QByteArray soapContent() const;
+        virtual QByteArray methodContent(QDomDocument &document,
+                                         QDomElement &body) const = 0;
 };
 
 #endif // _CWMP_METHOD_H_

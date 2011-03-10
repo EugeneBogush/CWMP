@@ -1,6 +1,7 @@
 #include <QString>
 
 #include "cwmpMethod.h"
+#include "soap.h"
 
 CWMPMethod::CWMPMethod() {
 }
@@ -28,3 +29,22 @@ QByteArray CWMPMethod::line(QByteArray l) const {
     return l;
 }
 
+QByteArray CWMPMethod::soapContent() const {
+    QDomDocument document;
+
+    QDomElement envelope = document.createElement("soap:Envelope");
+    envelope.setAttribute("xmlns:soap", QString(SOAP_ENV_NS));
+    envelope.setAttribute("xmlns:soap-enc", QString(SOAP_ENC_NS));
+    envelope.setAttribute("xmlns:cwmp", QString(CWMP_NS));
+    envelope.setAttribute("xmlns:xsd", QString(XSD_NS));
+    envelope.setAttribute("xmlns:xsi", QString(XSI_NS));
+    document.appendChild(envelope);
+
+    QDomElement header = document.createElement("soap:Header");
+    envelope.appendChild(header);
+
+    QDomElement body = document.createElement("soap:Body");
+    envelope.appendChild(body);
+
+    return methodContent(document, body);
+}

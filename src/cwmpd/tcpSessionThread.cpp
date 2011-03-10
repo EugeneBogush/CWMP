@@ -8,6 +8,7 @@
 #include <QtCrypto>
 
 #include "cwmpCtx.h"
+#include "cwmpGetParameterValuesMethod.h"
 #include "cwmpInformParser.h"
 #include "cwmpInformResponseMethod.h"
 #include "cwmpSoap.h"
@@ -51,9 +52,14 @@ void TCPSessionThread::stateMachine() {
         handleParseSoapState();
     } else if(SEND_INFORM_RESPONSE == _state) {
         qDebug("%s, %d: Set _state=%d", __FUNCTION__, __LINE__, _state);
-        sendInformResponse();
+        CWMPInformResponse resp;
+        sendMethod<CWMPInformResponseMethod, CWMPInformResponse>(resp);
     } else if(SEND_GET_PARAMETER_VALUES == _state) {
-        sendGetParameterValues();
+        CWMPGetParameterValues getParams;
+        getParams.addParameterName(
+                "InternetGatewayDevice.DeviceInfo.Manufacturer");
+        sendMethod<CWMPGetParameterValuesMethod, CWMPGetParameterValues>(
+                getParams);
     } else if(SEND_EMPTY_RESPONSE == _state) {
         qDebug("%s, %d: Set _state=%d", __FUNCTION__, __LINE__, _state);
         sendEmptyResponse();
@@ -82,29 +88,6 @@ void TCPSessionThread::handleGetContentState() {
     QTimer::singleShot(0, this, SLOT(stateMachine()));
 }
 
-void TCPSessionThread::sendInformResponse() {
-    CWMPInformResponseMethod informResponse;
-    QDomDocument informResponseDoc;
-    QDomElement envelope = informResponseDoc.createElementNS("http://schemas.xmlsoap.org/soap/envelope/", "cwmp:Envelope");
-    informResponseDoc.appendChild(envelope);
-
-    QDomElement body = informResponseDoc.createElement("cwmp:Body");
-    envelope.appendChild(body);
-
-    QDomElement informResp = informResponseDoc.createElement("InformResponse");
-    body.appendChild(informResp);
-    QByteArray xmlStr = informResponseDoc.toString().toLatin1();
-    _socket->write(informResponse.content());
-    if(_socket->waitForBytesWritten()) {
-        _state = GET_HEADERS;
-        QTimer::singleShot(0, this, SLOT(stateMachine()));
-    }
-}
-
-void TCPSessionThread::sendGetParameterValues() {
-
-}
-
 void TCPSessionThread::sendEmptyResponse() {
     QByteArray emptyLn;
     emptyLn += 0x0d;
@@ -114,6 +97,17 @@ void TCPSessionThread::sendEmptyResponse() {
     http += emptyLn + emptyLn;
     _socket->write(http);
     _socket->waitForBytesWritten();
+}
+
+template<class CWMPMethod, class CWMPMethodContent>
+void TCPSessionThread::sendMethod(const CWMPMethodContent &content) {
+    CWMPMethod method(content);
+    _socket->write(method.content());
+    if(_socket->waitForBytesWritten()) {
+        _contentRead = _contentLen = 0;
+        _state = GET_HEADERS;
+        QTimer::singleShot(0, this, SLOT(stateMachine()));
+    }
 }
 
 void TCPSessionThread::handleGetHeadersState()  {
@@ -127,7 +121,8 @@ void TCPSessionThread::handleParseSoapState() {
     int lineNo = 0;
     int colNo = 0;
     QByteArray name;
-    bool gotMessageIsInform = FALSE;
+    bool gotMessageIsInform = false;
+    bool gotMessageIsGetParameterValues = false;
 
     soapMessage.setContent(_content, true, &errorMsg, &lineNo, &colNo);
     name = soapMessage.nodeName().toLatin1();
@@ -176,7 +171,8 @@ void TCPSessionThread::handleParseSoapState() {
             // It's the body. Now we're expecting soap:<Method>
             QDomNode bodyNode = n.firstChild();
             // Is it Inform?
-            if(CWMP_NS == bodyNode.namespaceURI() && QString("Inform") == bodyNode.localName()) {
+            if(CWMP_NS == bodyNode.namespaceURI() &&
+               QString("Inform") == bodyNode.localName()) {
                 gotMessageIsInform = true;
                 CWMPInformParser informParser = CWMPInformParser(bodyNode);
                 qDebug("MaxEnvelopes=%d",
@@ -206,6 +202,12 @@ void TCPSessionThread::handleParseSoapState() {
                            informParser.inform().parameterList().parameters()[i].value().toString().toAscii().constData());
                 qDebug("It's a good place to use D-Bus for announcing an Inform");
                 _pDbusAdapter->emitInform(informParser.inform());
+                // Is it GetParameterValuesResponse?
+            } else if(CWMP_NS == bodyNode.namespaceURI() &&
+                      QString("GetParameterValuesResponse") ==
+                      bodyNode.localName()) {
+                gotMessageIsGetParameterValues = true;
+                qDebug("GETPARAMETERVALUES!!!!!!!!!!!!!!!!!!!!!!!!!");
             }
         }
 
@@ -216,7 +218,11 @@ void TCPSessionThread::handleParseSoapState() {
         _state = SEND_INFORM_RESPONSE;
         qDebug("%s, %d: Set _state to %d, _state=%d", __FUNCTION__, __LINE__, SEND_INFORM_RESPONSE, _state);
         QTimer::singleShot(0, this, SLOT(stateMachine()));
+    } else if(gotMessageIsGetParameterValues) {
+        _state = SEND_EMPTY_RESPONSE;
+        QTimer::singleShot(0, this, SLOT(stateMachine()));
     }
+
     qDebug("%s, %d", __FUNCTION__, __LINE__);
 }
 
@@ -252,7 +258,6 @@ void TCPSessionThread::getHeaders() {
             _state = GET_CONTENT;
         else
             //_state = SEND_EMPTY_RESPONSE;
-            // TODO: ONLY temporarily sending GetParameterValues
             _state = SEND_GET_PARAMETER_VALUES;
 
         QTimer::singleShot(0, this, SLOT(stateMachine()));

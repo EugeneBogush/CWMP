@@ -49,11 +49,11 @@ class TCPSessionThread : public QThread {
         void stateMachine();
         void getHeaders();
         void handleGetContentState();
-        void sendInformResponse();
-        void sendGetParameterValues();
         void sendEmptyResponse();
 
     private:
+        template<class CWMPMethod, class CWMPMethodContent>
+        void sendMethod(const CWMPMethodContent &content);
         void handleGetHeadersState();
         void handleParseSoapState();
 
