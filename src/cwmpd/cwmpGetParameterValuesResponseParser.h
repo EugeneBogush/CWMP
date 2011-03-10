@@ -8,7 +8,8 @@
 class CWMPGetParameterValuesResponseParser
 {
 public:
-    CWMPGetParameterValuesResponseParser();
+    CWMPGetParameterValuesResponseParser(
+            const QDomNode &gPVResponseNode);
     ~CWMPGetParameterValuesResponseParser();
 };
 

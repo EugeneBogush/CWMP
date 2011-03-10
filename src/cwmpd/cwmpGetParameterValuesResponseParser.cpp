@@ -1,6 +1,7 @@
 #include "cwmpGetParameterValuesResponseParser.h"
 
-CWMPGetParameterValuesResponseParser::CWMPGetParameterValuesResponseParser() {
+CWMPGetParameterValuesResponseParser::CWMPGetParameterValuesResponseParser(
+        const QDomNode &gPVResponseNodeCWMPParameterList) {
 }
 
 CWMPGetParameterValuesResponseParser::~CWMPGetParameterValuesResponseParser() {
