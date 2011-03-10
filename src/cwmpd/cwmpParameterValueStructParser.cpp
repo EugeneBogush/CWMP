@@ -1,9 +1,9 @@
-#include "cwmpParameterListParser.h"
+#include "cwmpParameterValueStructParser.h"
 
-CWMPParameterListParser::CWMPParameterListParser() {
+CWMPParameterValueStructParser::CWMPParameterValueStructParser() {
 }
 
-CWMPParameterListParser::CWMPParameterListParser(const QDomNode &parameterListNode) {
+CWMPParameterValueStructParser::CWMPParameterValueStructParser(const QDomNode &parameterListNode) {
     QDomNode node = parameterListNode.firstChild();
     while(!node.isNull()) {
         QByteArray dbgA = node.localName().toLatin1();
@@ -15,10 +15,10 @@ CWMPParameterListParser::CWMPParameterListParser(const QDomNode &parameterListNo
     }
 }
 
-CWMPParameterListParser::~CWMPParameterListParser() {
+CWMPParameterValueStructParser::~CWMPParameterValueStructParser() {
 }
 
-void CWMPParameterListParser::addParameter(const QDomNode &parameter) {
+void CWMPParameterValueStructParser::addParameter(const QDomNode &parameter) {
     QDomNode node = parameter.firstChild();
     QString name;
     QVariant value;
@@ -53,5 +53,5 @@ void CWMPParameterListParser::addParameter(const QDomNode &parameter) {
     }
 
     _parameters.parameters().append(
-            CWMPParameterList::ParameterValueStruct(name, value));
+            CWMPParameterValueStruct::ParameterValueStruct(name, value));
 }

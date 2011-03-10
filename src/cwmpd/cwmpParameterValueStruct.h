@@ -6,7 +6,7 @@
 #include <QString>
 #include <QVariant>
 
-class CWMPParameterList {
+class CWMPParameterValueStruct {
 public:
     class ParameterValueStruct {
         public:
@@ -23,8 +23,8 @@ public:
 
     typedef QList<ParameterValueStruct> ParameterList;
 
-    CWMPParameterList();
-    ~CWMPParameterList();
+    CWMPParameterValueStruct();
+    ~CWMPParameterValueStruct();
 
     ParameterList &parameters() { return _parameters; }
     const ParameterList &parameters() const { return _parameters; }
@@ -33,7 +33,7 @@ private:
     ParameterList _parameters;
 };
 
-QDBusArgument &operator <<(QDBusArgument &, const CWMPParameterList &);
-const QDBusArgument &operator >>(const QDBusArgument &, CWMPParameterList &);
+QDBusArgument &operator <<(QDBusArgument &, const CWMPParameterValueStruct &);
+const QDBusArgument &operator >>(const QDBusArgument &, CWMPParameterValueStruct &);
 
 #endif // CWMPPARAMETERLIST_H

@@ -1,20 +1,20 @@
-#include "cwmpParameterList.h"
+#include "cwmpParameterValueStruct.h"
 
-CWMPParameterList::ParameterValueStruct::ParameterValueStruct(
+CWMPParameterValueStruct::ParameterValueStruct::ParameterValueStruct(
         const QString &name, const QVariant &value)
 : _name(name), _value(value) {
 }
 
-CWMPParameterList::ParameterValueStruct::~ParameterValueStruct() {
+CWMPParameterValueStruct::ParameterValueStruct::~ParameterValueStruct() {
 }
 
-CWMPParameterList::CWMPParameterList() {
+CWMPParameterValueStruct::CWMPParameterValueStruct() {
 }
 
-CWMPParameterList::~CWMPParameterList() {
+CWMPParameterValueStruct::~CWMPParameterValueStruct() {
 }
 
-QDBusArgument &operator <<(QDBusArgument &arg, const CWMPParameterList &rhs) {
+QDBusArgument &operator <<(QDBusArgument &arg, const CWMPParameterValueStruct &rhs) {
     int size = rhs.parameters().size();
 
     arg.beginStructure();
@@ -33,7 +33,7 @@ QDBusArgument &operator <<(QDBusArgument &arg, const CWMPParameterList &rhs) {
     return arg;
 }
 
-const QDBusArgument &operator >>(const QDBusArgument &arg, CWMPParameterList &rhs) {
+const QDBusArgument &operator >>(const QDBusArgument &arg, CWMPParameterValueStruct &rhs) {
     int size;
 
     arg.beginStructure();
@@ -48,7 +48,7 @@ const QDBusArgument &operator >>(const QDBusArgument &arg, CWMPParameterList &rh
 
         arg >> name >> value;
         rhs.parameters().append(
-                CWMPParameterList::ParameterValueStruct(name, value.variant()));
+                CWMPParameterValueStruct::ParameterValueStruct(name, value.variant()));
     }
 
     arg.endStructure();

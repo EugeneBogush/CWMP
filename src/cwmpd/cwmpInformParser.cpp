@@ -2,8 +2,8 @@
 #include "cwmpEvent.h"
 #include "cwmpEventParser.h"
 #include "cwmpInformParser.h"
-#include "cwmpParameterList.h"
-#include "cwmpParameterListParser.h"
+#include "cwmpParameterValueStruct.h"
+#include "cwmpParameterValueStructParser.h"
 
 CWMPInformParser::CWMPInformParser() {
     qDebug("%s, %d: Constructing NULL CWMPInformParser", __FUNCTION__, __LINE__);
@@ -30,9 +30,10 @@ CWMPInformParser::CWMPInformParser(const QDomNode &informNode) {
         } else if(QString("RetryCount") == node.localName()) {
             _inform.setRetryCount(node.firstChild().toText().data().toUInt());
         } else if(QString("ParameterList") == node.localName()) {
-            CWMPParameterListParser parameterListParser =
-                    CWMPParameterListParser(node);
-            _inform.setParameterList(parameterListParser.parameters());
+            CWMPParameterValueStructParser parameterValueStructParser =
+                    CWMPParameterValueStructParser(node);
+            _inform.setParameterList(
+                    parameterValueStructParser.parameters());
         }
 
         node = node.nextSibling();

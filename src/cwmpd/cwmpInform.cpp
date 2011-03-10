@@ -29,7 +29,7 @@ const QDBusArgument &operator >>(const QDBusArgument &arg, CWMPInform &rhs) {
     unsigned u;
     CWMPDeviceID devID;
     CWMPEvent event;
-    CWMPParameterList paramList;
+    CWMPParameterValueStruct paramList;
 
     arg.beginStructure();
     arg >> version;

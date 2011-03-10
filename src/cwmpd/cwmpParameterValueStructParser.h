@@ -1,21 +1,21 @@
 #ifndef _CWMP_PARAMETER_LIST_PARSER_H_
 #define _CWMP_PARAMETER_LIST_PARSER_H_
 
-#include "cwmpParameterList.h"
+#include "cwmpParameterValueStruct.h"
 
 #include <QDomNode>
 #include <QString>
 
-class CWMPParameterListParser {
+class CWMPParameterValueStructParser {
     public:
-        CWMPParameterListParser();
-        CWMPParameterListParser(const QDomNode &parameterListNode);
-        ~CWMPParameterListParser();
+        CWMPParameterValueStructParser();
+        CWMPParameterValueStructParser(const QDomNode &parameterListNode);
+        ~CWMPParameterValueStructParser();
         void addParameter(const QDomNode &parameter);
-        const CWMPParameterList &parameters() const { return _parameters; }
+        const CWMPParameterValueStruct &parameters() const { return _parameters; }
 
     private:
-        CWMPParameterList _parameters;
+        CWMPParameterValueStruct _parameters;
 };
 
 #endif // _CWMP_PARAMETER_LIST_PARSER_H_

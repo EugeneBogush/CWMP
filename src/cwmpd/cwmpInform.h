@@ -3,7 +3,7 @@
 
 #include "cwmpDeviceID.h"
 #include "cwmpEvent.h"
-#include "cwmpParameterList.h"
+#include "cwmpParameterValueStruct.h"
 
 #include <QtDBus/QDBusArgument>
 #include <QString>
@@ -20,8 +20,8 @@ public:
     const CWMPEvent &event() const { return _event; }
     void setEvent(const CWMPEvent &event) { _event = event; }
 
-    const CWMPParameterList &parameterList() const { return _parameterList; }
-    void setParameterList(const CWMPParameterList &parameterList)
+    const CWMPParameterValueStruct &parameterList() const { return _parameterList; }
+    void setParameterList(const CWMPParameterValueStruct &parameterList)
         { _parameterList = parameterList; }
 
     unsigned maxEnvelopes() const { return _maxEnvelopes; }
@@ -40,7 +40,7 @@ private:
     unsigned _retryCount;
     CWMPDeviceID _deviceID;
     CWMPEvent _event;
-    CWMPParameterList _parameterList;
+    CWMPParameterValueStruct _parameterList;
 };
 Q_DECLARE_METATYPE(CWMPInform)
 
