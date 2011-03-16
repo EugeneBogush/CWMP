@@ -9,6 +9,7 @@
 
 #include "cwmpCtx.h"
 #include "cwmpGetParameterValuesMethod.h"
+#include "cwmpGetParameterValuesResponseParser.h"
 #include "cwmpInformParser.h"
 #include "cwmpInformResponseMethod.h"
 #include "cwmpSoap.h"
@@ -57,7 +58,8 @@ void TCPSessionThread::stateMachine() {
     } else if(SEND_GET_PARAMETER_VALUES == _state) {
         CWMPGetParameterValues getParams;
         getParams.addParameterName(
-                "InternetGatewayDevice.DeviceInfo.Manufacturer");
+                //"InternetGatewayDevice.DeviceInfo.Manufacturer");
+                "InternetGatewayDevice.");
         sendMethod<CWMPGetParameterValuesMethod, CWMPGetParameterValues>(
                 getParams);
     } else if(SEND_EMPTY_RESPONSE == _state) {
@@ -207,7 +209,14 @@ void TCPSessionThread::handleParseSoapState() {
                       QString("GetParameterValuesResponse") ==
                       bodyNode.localName()) {
                 gotMessageIsGetParameterValues = true;
+                CWMPGetParameterValuesResponseParser gPVRespParser =
+                        CWMPGetParameterValuesResponseParser(bodyNode);
                 qDebug("GETPARAMETERVALUES!!!!!!!!!!!!!!!!!!!!!!!!!");
+                int size = gPVRespParser.getParameterValuesResponse().parameterList().parameters().size();
+                for(int i = 0; i < size; ++i) {
+                    qDebug("Name=<%s>", gPVRespParser.getParameterValuesResponse().parameterList().parameters()[i].name().toAscii().constData());
+                    qDebug("Value=<%s>\n", gPVRespParser.getParameterValuesResponse().parameterList().parameters()[i].value().toString().toAscii().constData());
+                }
             }
         }
 
