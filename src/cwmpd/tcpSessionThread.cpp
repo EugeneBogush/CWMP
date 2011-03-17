@@ -26,6 +26,7 @@ _contentRead(0) {
     connection.registerObject("/CWMPd", this);
     connection.registerService("org.prezu_cwmp");
 
+    connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
     connect(_socket, SIGNAL(disconnected()), this, SLOT(deleteLater()));
 }
 
@@ -58,22 +59,39 @@ void TCPSessionThread::stateMachine() {
     } else if(SEND_GET_PARAMETER_VALUES == _state) {
         CWMPGetParameterValues getParams;
         getParams.addParameterName(
-                //"InternetGatewayDevice.DeviceInfo.Manufacturer");
-                "InternetGatewayDevice.");
+                "InternetGatewayDevice.DeviceInfo.Manufacturer");
+                //"InternetGatewayDevice.");
         sendMethod<CWMPGetParameterValuesMethod, CWMPGetParameterValues>(
                 getParams);
+    } else if(CHECK_SCHEDULE_QUEUE == _state) {
+        // TODO: Implement it
+        changeState(FINISHED);
     } else if(SEND_EMPTY_RESPONSE == _state) {
         qDebug("%s, %d: Set _state=%d", __FUNCTION__, __LINE__, _state);
         sendEmptyResponse();
+    }
+
+    if(FINISHED != _state)
+        QTimer::singleShot(0, this, SLOT(stateMachine()));
+    else {
+        qDebug("Finishing...");
+    }
+}
+
+void TCPSessionThread::changeState(State newState) {
+    _state = newState;
+    if(GET_HEADERS == _state) {
+        _contentLen = _contentRead = 0;
+        _content.clear();
     }
 }
 
 void TCPSessionThread::handleGetContentState() {
     qDebug("%s, Hello...", __FUNCTION__);
     while(!_socket->bytesAvailable()) {
-        qDebug("%s, %d: Nothing yet available to read", __FUNCTION__, __LINE__);
-        QTimer::singleShot(10, this, SLOT(handleGetContentState()));
-        qDebug("%s, %d: Nothing yet available to read", __FUNCTION__, __LINE__);
+        qDebug("%s, %d: Nothing yet available to read. Sleeping...", __FUNCTION__, __LINE__);
+        msleep(10);
+        qDebug("Awoken");
         return;
     }
 
@@ -81,13 +99,15 @@ void TCPSessionThread::handleGetContentState() {
     qDebug("%s, %d: _contentRead=%d, _contentLen=%d", __FUNCTION__, __LINE__, _contentRead, _contentLen);
     if(_contentRead < _contentLen) {
         qDebug("%s, %d: _contentRead=%d, _contentLen=%d", __FUNCTION__, __LINE__, _contentRead, _contentLen);
-        QTimer::singleShot(10, this, SLOT(handleGetContentState()));
-        qDebug("%s, %d: _contentRead=%d, _contentLen=%d", __FUNCTION__, __LINE__, _contentRead, _contentLen);
+        qDebug("Sleeping...");
+        msleep(10);
+        qDebug("Awoken");
         return;
     }
 
-    _state = PARSE_SOAP;
-    QTimer::singleShot(0, this, SLOT(stateMachine()));
+    if(_contentLen > 0) {
+        changeState(PARSE_SOAP);
+    }
 }
 
 void TCPSessionThread::sendEmptyResponse() {
@@ -99,6 +119,8 @@ void TCPSessionThread::sendEmptyResponse() {
     http += emptyLn + emptyLn;
     _socket->write(http);
     _socket->waitForBytesWritten();
+
+    changeState(FINISHED);
 }
 
 template<class CWMPMethod, class CWMPMethodContent>
@@ -106,15 +128,8 @@ void TCPSessionThread::sendMethod(const CWMPMethodContent &content) {
     CWMPMethod method(content);
     _socket->write(method.content());
     if(_socket->waitForBytesWritten()) {
-        _contentRead = _contentLen = 0;
-        _state = GET_HEADERS;
-        QTimer::singleShot(0, this, SLOT(stateMachine()));
+        changeState(GET_HEADERS);
     }
-}
-
-void TCPSessionThread::handleGetHeadersState()  {
-    _socket->waitForReadyRead();
-    getHeaders();
 }
 
 void TCPSessionThread::handleParseSoapState() {
@@ -165,9 +180,6 @@ void TCPSessionThread::handleParseSoapState() {
             qDebug("%s, %d: namespace=%s", __FUNCTION__, __LINE__, name.constData());
             name = idNode.localName().toLatin1();
             qDebug("%s, %d: localName=%s", __FUNCTION__, __LINE__, name.constData());
-            if(CWMP_NS == idNode.namespaceURI() && QString("ID") == idNode.localName()) {
-                qDebug("!!!!!!!!!!!!!!!!!!!!!!!!");
-            }
         } else if(SOAP_NS == n.namespaceURI() && QString("Body") == n.localName()) {
             qDebug("%s, %d: It's soap:Body, parsing it...", __FUNCTION__, __LINE__);
             // It's the body. Now we're expecting soap:<Method>
@@ -224,29 +236,29 @@ void TCPSessionThread::handleParseSoapState() {
     }
 
     if(gotMessageIsInform) {
-        _state = SEND_INFORM_RESPONSE;
+        changeState(SEND_INFORM_RESPONSE);
         qDebug("%s, %d: Set _state to %d, _state=%d", __FUNCTION__, __LINE__, SEND_INFORM_RESPONSE, _state);
-        QTimer::singleShot(0, this, SLOT(stateMachine()));
     } else if(gotMessageIsGetParameterValues) {
-        _state = SEND_EMPTY_RESPONSE;
-        QTimer::singleShot(0, this, SLOT(stateMachine()));
+        changeState(SEND_EMPTY_RESPONSE);
     }
 
     qDebug("%s, %d", __FUNCTION__, __LINE__);
 }
 
-void TCPSessionThread::getHeaders() {
+void TCPSessionThread::handleGetHeadersState() {
     QByteArray line;
     QByteArray emptyLine;
     const QString CONT_LEN("Content-Length: ");
     const QString COOKIE("Cookie:");
 
+    qDebug("%d, hello...", __LINE__);
     emptyLine += 0x0d;
     emptyLine += 0x0a;
 
     while(!_socket->canReadLine()) {
-        qDebug("CAN'T READ LINE YET");
-        QTimer::singleShot(10, this, SLOT(getHeaders()));
+        qDebug("CAN'T READ LINE YET. Sleeping...");
+        msleep(10);
+        qDebug("Awoken");
         return;
     }
 
@@ -263,16 +275,20 @@ void TCPSessionThread::getHeaders() {
         _cookie = cookieHdr.right(cookieHdr.size() - COOKIE.size());
     } else if(emptyLine == line) {
         // The end of headers
-        if(0 != _contentLen)
-            _state = GET_CONTENT;
-        else
-            //_state = SEND_EMPTY_RESPONSE;
-            _state = SEND_GET_PARAMETER_VALUES;
-
-        QTimer::singleShot(0, this, SLOT(stateMachine()));
-        return;
+        if(0 != _contentLen) {
+            changeState(GET_CONTENT);
+        } else {
+            // TODO: Remove this
+            static bool once = true;
+            if(once) {
+                once = false;
+                changeState(SEND_GET_PARAMETER_VALUES);
+            } else {
+                //changeState(CHECK_SCHEDULE_QUEUE);
+                sendEmptyResponse();
+                changeState(FINISHED);
+            }
+        }
     }
-    
-    QTimer::singleShot(10, this, SLOT(getHeaders()));
 }
 

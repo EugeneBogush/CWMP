@@ -15,7 +15,6 @@ CWMPServer::~CWMPServer() {
 void CWMPServer::handleIncomingConnection() {
     qDebug("New connection.");
     TCPSessionThread *thread = new TCPSessionThread(nextPendingConnection(), this);
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
     thread->run();
 }
 
