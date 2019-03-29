@@ -26,7 +26,8 @@ class TCPSessionThread : public QThread {
             SEND_GET_PARAMETER_VALUES, //!< Need to send GetParameterValues to CPE
             CHECK_SCHEDULE_QUEUE,      //!< Check if more tasks are scheduled for this CPE
             SEND_EMPTY_RESPONSE,       //!< Need to send empty HTTP response
-            FINISHED                   //!< Free to exit state machine
+            FINISHED,                   //!< Free to exit state machine
+            SEND_SET_PARAMETER_VALUES
         };
 
         //! Constructor of TCP session thread

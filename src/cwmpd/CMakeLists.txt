@@ -31,6 +31,10 @@ set(cwmpd_SRCS
     cwmpMethod.cpp
     cwmpParameterValueStruct.cpp
     cwmpParameterValueStructParser.cpp
+    cwmpAutoCompleteTransferResponse.cpp
+    cwmpAutoCompleteTransferResponseMethod.cpp
+    cwmpGetParameterNames.cpp
+    cwmpGetParameterNamesMethod.cpp
     cwmpServer.cpp
     main.cpp
     tcpSessionThread.cpp)

@@ -7,7 +7,7 @@ CWMPParameterValueStructParser::CWMPParameterValueStructParser(const QDomNode &p
     QDomNode node = parameterListNode.firstChild();
     while(!node.isNull()) {
         QByteArray dbgA = node.localName().toLatin1();
-        qDebug("%s, %d: Node's name is %s", __FUNCTION__, __LINE__, dbgA.constData());
+        //qDebug("%s, %d: Node's name is %s", __FUNCTION__, __LINE__, dbgA.constData());
 
         addParameter(node);
 
@@ -30,7 +30,8 @@ void CWMPParameterValueStructParser::addParameter(const QDomNode &parameter) {
             QDomNamedNodeMap attributes = node.attributes();
             QDomAttr typeAttr = attributes.namedItem("type").toAttr();
             QString  type = typeAttr.value();
-            if("xsd:string" == type ||
+            if("" == type ||
+               "xsd:string" == type ||
                "xsd:dateTime" == type ||
                "xsd:base64" == type ||
                "xsd:anySimpleType" == type) {

@@ -3,8 +3,8 @@
 
 CWMPGetParameterValuesResponseParser::CWMPGetParameterValuesResponseParser(
         const QDomNode &gPVResponseNode) {
-    qDebug("%s, %d: Constructing filled "
-           "CWMPGetParameterValuesResponseParser", __FUNCTION__, __LINE__);
+    qDebug("%d | %s: Constructing filled "
+           "CWMPGetParameterValuesResponseParser", __LINE__, __FUNCTION__ );
     QDomNode node = gPVResponseNode.firstChild();
 
     while(!node.isNull()) {
