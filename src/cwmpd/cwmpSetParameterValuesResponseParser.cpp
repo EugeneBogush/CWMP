@@ -1,6 +1,3 @@
-#include <qt5/QtCore/qdebug.h>
-#include <qt5/QtCore/qstring.h>
-
 #include "cwmpSetParameterValuesResponseParser.h"
 #include "cwmpParameterValueStructParser.h"
 
