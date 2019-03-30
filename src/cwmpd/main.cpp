@@ -110,6 +110,7 @@ mongo_insert_inform(char *SerialNumber, char *Time, char *OpState,
 }
 
 int port = 0;
+QString interface;
 
 int parseConfig(void) {
     QSettings settings("cwmpd.ini",
@@ -121,6 +122,8 @@ int parseConfig(void) {
     foreach(const QString &childKey, childKeys) {
         if (childKey == "port") {
             port = settings.value(childKey).toInt();
+        } else if(childKey == "bind") {
+            interface = settings.value(childKey).toString();
         } else {
             QString var = settings.value(childKey).toString();
             qDebug() << childKey << ":" << var;
@@ -136,7 +139,7 @@ int main(int argc, char *argv[]) {
     QCoreApplication app(argc, argv);
     CWMPServer server;
     server.listen(QHostAddress::Any, port);
-    qDebug("Start tcp server port: %d", port);
+    qDebug() << "Start TCP Server" << interface <<":"<< port;
 
     app.exec();
 
