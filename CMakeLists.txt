@@ -14,11 +14,12 @@ find_package(QCA2 REQUIRED)
 #find_package(LibBSON ${LIBBSON_REQUIRED_VERSION} REQUIRED CONFIGS libbson-1.0-config.cmake)
 #find_package(LibMongoC ${LIBMONGOC_REQUIRED_VERSION} REQUIRED CONFIGS libmongoc-1.0-config.cmake)
 # set(CMAKE_C_STANDARD 11)
- include_directories("/usr/include/libmongoc-1.0")
- include_directories("/usr/include/libbson-1.0")
- link_libraries("/usr/lib/x86_64-linux-gnu/libmongoc-1.0.so.0")
- link_libraries("/usr/lib/x86_64-linux-gnu/libbson-1.0.so.0")
-# target_link_libraries(cwmp /usr/lib/x86_64-linux-gnu/libmongoc-1.0.so.0 /usr/lib/x86_64-linux-gnu/libbson-1.0.so.0)
+# libmongoc
+include_directories("/usr/include/libmongoc-1.0")
+link_libraries("/usr/lib/x86_64-linux-gnu/libmongoc-1.0.so.0")
+# libbson
+include_directories("/usr/include/libbson-1.0")
+link_libraries("/usr/lib/x86_64-linux-gnu/libbson-1.0.so.0")
 
 #########
 
@@ -34,4 +35,3 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Wall ${CMAKE_CXX_FLAGS_RELEASE}")
 add_subdirectory(src)
 add_subdirectory(doc)
 
-include_directories(/usr/include/libbson-1.0 /usr/include/libmongoc-1.0)
