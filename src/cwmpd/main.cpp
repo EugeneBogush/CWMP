@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <QSettings>
+#include <QFileInfo>
 
 #include "cwmpInform.h"
 #include "cwmpServer.h"
@@ -112,8 +113,8 @@ mongo_insert_inform(char *SerialNumber, char *Time, char *OpState,
 int port = 0;
 QString interface;
 
-int parseConfig(void) {
-    QSettings settings("cwmpd.ini",
+int parseConfig(QString file) {
+    QSettings settings(file,
             QSettings::IniFormat);
 
     settings.beginGroup("MAIN");
@@ -122,7 +123,7 @@ int parseConfig(void) {
     foreach(const QString &childKey, childKeys) {
         if (childKey == "port") {
             port = settings.value(childKey).toInt();
-        } else if(childKey == "bind") {
+        } else if (childKey == "bind") {
             interface = settings.value(childKey).toString();
         } else {
             QString var = settings.value(childKey).toString();
@@ -134,12 +135,22 @@ int parseConfig(void) {
 }
 
 int main(int argc, char *argv[]) {
-    parseConfig();
-
+    QString configFile = "cwmpd.ini";
+    QFile path(configFile);
+    bool fileExists = QFileInfo(path).exists() &&
+            QFileInfo(path).isFile();
+    if (fileExists)
+        parseConfig(configFile);
+    else {
+        qDebug() << "Config file " << configFile << "not found!";
+        return (-1);
+    }
     QCoreApplication app(argc, argv);
     CWMPServer server;
+    if (port == 0)
+        port = 8080;
     server.listen(QHostAddress::Any, port);
-    qDebug() << "Start TCP Server" << interface <<":"<< port;
+    qDebug() << "Start TCP Server" << interface << ":" << port;
 
     app.exec();
 
