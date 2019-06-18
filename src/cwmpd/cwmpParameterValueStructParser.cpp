@@ -36,16 +36,17 @@ void CWMPParameterValueStructParser::addParameter(const QDomNode &parameter) {
                "xsd:base64" == type ||
                "xsd:anySimpleType" == type) {
                 value = node.firstChild().toText().data();
-            } else if("xsd:int" == type) {
+            } else if("xsd:int" == type || 
+                      "xsd:signedInt" == type) {
                 value = node.firstChild().toText().data().toInt();
             } else if("xsd:unsignedInt" == type) {
                 value = node.firstChild().toText().data().toUInt();
             } else if("xsd:boolean" == type) {
                 if("0" == node.firstChild().toText().data() ||
                    "false" == node.firstChild().toText().data()) {
-                    value  = true;
+                    value  = false;
                 } else {
-                    value = false;
+                    value = true;
                 }
             }
         }
